@@ -10,7 +10,7 @@ $user = $_POST['usuario']; // El nombre de usuario ingresado
 $pass = $_POST['contraseña']; // La contraseña ingresada
 
 // Preparar la consulta SQL para verificar el usuario
-$sql = "SELECT * FROM usuarios WHERE loginusuario = :usuario"; // Se usa el campo 'loginusuario' para el login
+$sql = "SELECT * FROM usuarios WHERE username = :usuario"; // Se usa el campo 'username' para el login
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':usuario', $user, PDO::PARAM_STR);
 $stmt->execute();

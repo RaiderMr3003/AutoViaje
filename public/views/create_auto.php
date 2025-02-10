@@ -36,9 +36,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             <form action="#" method="post">
                 <ul>
                     <li>
-                        <label for="nro-crono">N° Cronológico:</label>
-                        <input type="text" id="nro-crono" name="nro-crono">
+                        <label for="nro-control">N° Control:</label>
+                        <input type="text" id="id_autorizacion" name="id_autorizacion">
                     </li>
+
                     <li>
                         <label for="tipo-permiso">Tipo de Permiso:</label>
                         <select id="tipo-permiso" name="tipo-permiso">
@@ -46,18 +47,21 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                             
                         </select>
                     </li>
+
                     <li>
                         <label for="fecha-ingreso">Fecha de ingreso:</label>
                         <input type="date" id="fecha-ingreso" name="fecha-ingreso" disabled>
                     </li>
+
                     <li>
                         <label for="Viaja-a">Viaja a:</label>
                         <input type="text" id="viaja-a" name="viaja-a">
                     </li>
+
                     <li>
-                        <label for="documento_acompañante">Nro. Documento del acompañante:</label>
+                        <label for="documento_acompañante">Datos del acompañante:</label>
                         <select name="documento_acompañante" id="documento_acompañante">
-                            <option value="">Seleccione</option>
+                            <option value="">Seleccione tipo de documento</option>
                             
                         </select>
                         <input type="text" id="numdoc_acompañante" name="numdoc_acompañante" placeholder="Nro. Documento">
@@ -69,9 +73,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <input type="text" id="apellido-acompañante" name="apellido-acompañante" placeholder="Apellidos">
                     </li>
                     <li>
-                        <label for="documento_responsable">Nro. Documento del responsable:</label>
+                        <label for="documento_responsable">Datos del responsable:</label>
                         <select name="documento_responsable" id="documento_responsable">
-                            <option value="">Seleccione</option>
+                            <option value="">Seleccione tipo de documento</option>
                             
                         </select>
                         <input type="text" id="numdoc_responsable" name="numdoc_responsable" placeholder="Nro. Documento">
@@ -83,8 +87,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <input type="text" id="apellido-responsable" name="apellido-responsable" placeholder="Apellidos">
                     </li>
                     <li>
-                        <label for="medio-de-transporte">Medio de transporte:</label>
-                        <select name="medio-de-transporte" id="medio-de-transporte">
+                        <label for="tipo_transporte">Medio de transporte:</label>
+                        <select name="tipo_transporte" id="tipo_transporte">
                             <option value="">Seleccione</option>
                             
                         </select>

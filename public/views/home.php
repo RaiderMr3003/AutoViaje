@@ -36,6 +36,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
             <form method="POST" action="">
                 <div class="form-group">
+                    <label for="nro-control">N° de Control:</label>
+                    <input type="text" id="nro-control" name="nro-control">
+                </div>
+
+                <div class="form-group">
                     <label for="nro-crono">N° Cronológico:</label>
                     <input type="text" id="nro-crono" name="nro-crono">
                 </div>
@@ -54,8 +59,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 </div>
 
                 <div class="form-group">
-                    <label for="nro-control">N° de Control:</label>
-                    <input type="text" id="nro-control" name="nro-control">
+                    <label for="nombre-responsable">Nombre del Responsable:</label>
+                    <input type="text" id="nombre-responsable" name="nombre-responsable">
                 </div>
 
                 <div class="form-group">
