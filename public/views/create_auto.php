@@ -33,7 +33,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         <!-- Panel de Creación de Permiso -->
         <div class="container">
             <h1>Autorizaciones de Viaje</h1>
-            <form action="#">
+            <form action="#" method="post">
                 <ul>
                     <li>
                         <label for="nro-crono">N° Cronológico:</label>
@@ -52,7 +52,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     </li>
                     <li>
                         <label for="Viaja-a">Viaja a:</label>
-                        <input type="text" id="Viaja-a" name="Viaja-a">
+                        <input type="text" id="viaja-a" name="viaja-a">
                     </li>
                     <li>
                         <label for="documento_acompañante">Nro. Documento del acompañante:</label>
@@ -63,12 +63,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <input type="text" id="numdoc_acompañante" name="numdoc_acompañante" placeholder="Nro. Documento">
                     </li>
                     <li>
-                        <label for="nombre-acompañante">Nombre:</label>
-                        <input type="text" id="nombre-acompañante" name="nombre-acompañante">
+                        <input type="text" id="nombre-acompañante" name="nombre-acompañante" placeholder="Nombres">
                     </li>
                     <li>
-                        <label for="apellido-acompañante">Apellido:</label>
-                        <input type="text" id="apellido-acompañante" name="apellido-acompañante">
+                        <input type="text" id="apellido-acompañante" name="apellido-acompañante" placeholder="Apellidos">
                     </li>
                     <li>
                         <label for="documento_responsable">Nro. Documento del responsable:</label>
@@ -79,12 +77,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <input type="text" id="numdoc_responsable" name="numdoc_responsable" placeholder="Nro. Documento">
                     </li>
                     <li>
-                        <label for="nombre-responsable">Nombre:</label>
-                        <input type="text" id="nombre-responsable" name="nombre-responsable">
+                        <input type="text" id="nombre-responsable" name="nombre-responsable" placeholder="Nombres">
                     </li>
                     <li>
-                        <label for="apellido-responsable">Apellido:</label>
-                        <input type="text" id="apellido-responsable" name="apellido-responsable">
+                        <input type="text" id="apellido-responsable" name="apellido-responsable" placeholder="Apellidos">
                     </li>
                     <li>
                         <label for="medio-de-transporte">Medio de transporte:</label>
@@ -108,6 +104,18 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     <li>
                         <label for="observaciones">Observaciones:</label>
                         <textarea name="observaciones" id="observaciones"></textarea>
+                    </li>
+                        <button type="button" id="add-participant">Agregar participante</button>
+                        <ul id="buttons-container">
+                            <li>
+                                <button class="participant-btn" data-role="Madre">Madre</button>
+                                <button class="participant-btn" data-role="Padre">Padre</button>
+                                <button class="participant-btn" data-role="Apoderado">Apoderado</button>
+                                <button class="participant-btn" data-role="Menor">Menor</button>
+                            </li>
+                        </ul>
+                    <li>
+                        <input type="submit" value="Crear">
                     </li>
                 </ul>
             </form>
