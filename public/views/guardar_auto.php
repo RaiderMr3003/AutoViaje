@@ -9,9 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $encargado = $user; // Nombre del usuario logueado
 
         // Recibir datos del formulario
+        $id_autorizacion = isset($_POST['id']) ? $_POST['id'] : null;
         $nro_kardex = $_POST['id_control'];
         $id_tppermi = $_POST['tipo-permiso'];
-        $fecha_ingreso = date("Y-m-d"); // Fecha actual
+        $fecha_ingreso = date("Y-m-d"); // Fecha actual (se usa solo para nuevos registros)
         $viaja_a = $_POST['viaja-a'];
 
         // Datos del acompañante
@@ -33,44 +34,92 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fecha_fin = $_POST['hasta'];
         $observaciones = $_POST['observaciones'];
 
-        // Preparar la consulta SQL con el campo 'encargado'
-        $sql = "INSERT INTO autorizaciones 
-            (nro_kardex, encargado, id_tppermi, fecha_ingreso, viaja_a, 
-            id_tpdoc_acomp, num_doc_acomp, nombres_acomp, apellidos_acomp, 
-            id_tpdoc_resp, num_doc_resp, nombres_resp, apellidos_resp, 
-            id_tptrans, agencia_transporte, fecha_inicio, fecha_fin, observaciones)
-            VALUES 
-            (:nro_kardex, :encargado, :id_tppermi, :fecha_ingreso, :viaja_a, 
-            :id_tpdoc_acomp, :num_doc_acomp, :nombres_acomp, :apellidos_acomp, 
-            :id_tpdoc_resp, :num_doc_resp, :nombres_resp, :apellidos_resp, 
-            :id_tptrans, :agencia_transporte, :fecha_inicio, :fecha_fin, :observaciones)";
+        if ($id_autorizacion) {
+            // Si existe ID, actualizar la autorización
+            $sql = "UPDATE autorizaciones SET 
+                nro_kardex = :nro_kardex, 
+                encargado = :encargado, 
+                id_tppermi = :id_tppermi, 
+                viaja_a = :viaja_a, 
+                id_tpdoc_acomp = :id_tpdoc_acomp, 
+                num_doc_acomp = :num_doc_acomp, 
+                nombres_acomp = :nombres_acomp, 
+                apellidos_acomp = :apellidos_acomp, 
+                id_tpdoc_resp = :id_tpdoc_resp, 
+                num_doc_resp = :num_doc_resp, 
+                nombres_resp = :nombres_resp, 
+                apellidos_resp = :apellidos_resp, 
+                id_tptrans = :id_tptrans, 
+                agencia_transporte = :agencia_transporte, 
+                fecha_inicio = :fecha_inicio, 
+                fecha_fin = :fecha_fin, 
+                observaciones = :observaciones
+                WHERE id_autorizacion = :id_autorizacion";
 
-        // Ejecutar la consulta
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':nro_kardex' => $nro_kardex,
-            ':encargado' => $encargado, // Aquí guardamos el nombre del usuario logueado
-            ':id_tppermi' => $id_tppermi,
-            ':fecha_ingreso' => $fecha_ingreso,
-            ':viaja_a' => $viaja_a,
-            ':id_tpdoc_acomp' => $id_tpdoc_acomp,
-            ':num_doc_acomp' => $num_doc_acomp,
-            ':nombres_acomp' => $nombres_acomp,
-            ':apellidos_acomp' => $apellidos_acomp,
-            ':id_tpdoc_resp' => $id_tpdoc_resp,
-            ':num_doc_resp' => $num_doc_resp,
-            ':nombres_resp' => $nombres_resp,
-            ':apellidos_resp' => $apellidos_resp,
-            ':id_tptrans' => $id_tptrans,
-            ':agencia_transporte' => $agencia_transporte,
-            ':fecha_inicio' => $fecha_inicio,
-            ':fecha_fin' => $fecha_fin,
-            ':observaciones' => $observaciones
-        ]);
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':id_autorizacion' => $id_autorizacion,
+                ':nro_kardex' => $nro_kardex,
+                ':encargado' => $encargado,
+                ':id_tppermi' => $id_tppermi,
+                ':viaja_a' => $viaja_a,
+                ':id_tpdoc_acomp' => $id_tpdoc_acomp,
+                ':num_doc_acomp' => $num_doc_acomp,
+                ':nombres_acomp' => $nombres_acomp,
+                ':apellidos_acomp' => $apellidos_acomp,
+                ':id_tpdoc_resp' => $id_tpdoc_resp,
+                ':num_doc_resp' => $num_doc_resp,
+                ':nombres_resp' => $nombres_resp,
+                ':apellidos_resp' => $apellidos_resp,
+                ':id_tptrans' => $id_tptrans,
+                ':agencia_transporte' => $agencia_transporte,
+                ':fecha_inicio' => $fecha_inicio,
+                ':fecha_fin' => $fecha_fin,
+                ':observaciones' => $observaciones
+            ]);
 
-        // Redirigir con mensaje de éxito
-        $_SESSION['mensaje'] = "Autorización guardada correctamente.";
-        header("Location: create_auto.php");
+            $_SESSION['mensaje'] = "Autorización actualizada correctamente.";
+        } else {
+            // Si no existe ID, insertar nueva autorización
+            $sql = "INSERT INTO autorizaciones 
+                (nro_kardex, encargado, id_tppermi, fecha_ingreso, viaja_a, 
+                id_tpdoc_acomp, num_doc_acomp, nombres_acomp, apellidos_acomp, 
+                id_tpdoc_resp, num_doc_resp, nombres_resp, apellidos_resp, 
+                id_tptrans, agencia_transporte, fecha_inicio, fecha_fin, observaciones)
+                VALUES 
+                (:nro_kardex, :encargado, :id_tppermi, :fecha_ingreso, :viaja_a, 
+                :id_tpdoc_acomp, :num_doc_acomp, :nombres_acomp, :apellidos_acomp, 
+                :id_tpdoc_resp, :num_doc_resp, :nombres_resp, :apellidos_resp, 
+                :id_tptrans, :agencia_transporte, :fecha_inicio, :fecha_fin, :observaciones)";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':nro_kardex' => $nro_kardex,
+                ':encargado' => $encargado,
+                ':id_tppermi' => $id_tppermi,
+                ':fecha_ingreso' => $fecha_ingreso,
+                ':viaja_a' => $viaja_a,
+                ':id_tpdoc_acomp' => $id_tpdoc_acomp,
+                ':num_doc_acomp' => $num_doc_acomp,
+                ':nombres_acomp' => $nombres_acomp,
+                ':apellidos_acomp' => $apellidos_acomp,
+                ':id_tpdoc_resp' => $id_tpdoc_resp,
+                ':num_doc_resp' => $num_doc_resp,
+                ':nombres_resp' => $nombres_resp,
+                ':apellidos_resp' => $apellidos_resp,
+                ':id_tptrans' => $id_tptrans,
+                ':agencia_transporte' => $agencia_transporte,
+                ':fecha_inicio' => $fecha_inicio,
+                ':fecha_fin' => $fecha_fin,
+                ':observaciones' => $observaciones
+            ]);
+
+            $id_autorizacion = $pdo->lastInsertId();
+            $_SESSION['mensaje'] = "Autorización guardada correctamente.";
+        }
+
+        // Redirigir a la página de edición con el ID correspondiente
+        header("Location: edit_auto.php?id=" . $id_autorizacion);
         exit();
     } catch (PDOException $e) {
         die("Error al guardar: " . $e->getMessage());
