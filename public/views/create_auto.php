@@ -8,6 +8,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: ../../index.php");
     exit;
 }
+
+require 'includes/functions.php';
 ?>
 
 <!DOCTYPE html>
@@ -33,18 +35,30 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         <!-- Panel de Creación de Permiso -->
         <div class="container">
             <h1>Autorizaciones de Viaje</h1>
-            <form action="#" method="post">
+            <?php
+                if (isset($_SESSION['mensaje'])) {
+                    echo "<p style='color: green;'>" . $_SESSION['mensaje'] . "</p>";
+                    unset($_SESSION['mensaje']); // Elimina el mensaje después de mostrarlo
+                }
+            ?>
+            <form action="guardar_auto.php" method="post">
                 <ul>
                     <li>
                         <label for="nro-control">N° Control:</label>
-                        <input type="text" id="id_autorizacion" name="id_autorizacion">
+                        <input type="text" id="id_control" name="id_control">
                     </li>
 
                     <li>
                         <label for="tipo-permiso">Tipo de Permiso:</label>
                         <select id="tipo-permiso" name="tipo-permiso">
                             <option value="">Seleccione</option>
+                            <?php
+                            $permisos = getTpPermisos();
                             
+                            foreach ($permisos as $permiso) {
+                                echo "<option value='" . $permiso->id_tppermi . "'>" . $permiso->des_tppermi . "</option>";
+                            }
+                            ?>
                         </select>
                     </li>
 
@@ -61,36 +75,59 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     <li>
                         <label for="documento_acompañante">Datos del acompañante:</label>
                         <select name="documento_acompañante" id="documento_acompañante">
-                            <option value="">Seleccione tipo de documento</option>
-                            
+                            <option value="">Seleccione Tipo de documento</option>
+                            <?php
+                                $tpdoc = getTpDoc();
+                                
+                                foreach ($tpdoc as $tpdoc) {
+                                    echo "<option value='" . $tpdoc->id_tpdoc . "'>" . $tpdoc->des_tpdoc . "</option>";
+                                }
+                            ?>
                         </select>
-                        <input type="text" id="numdoc_acompañante" name="numdoc_acompañante" placeholder="Nro. Documento">
+                        <input type="text" id="numdoc_acompañante" name="numdoc_acompañante"
+                            placeholder="Nro. Documento">
                     </li>
                     <li>
                         <input type="text" id="nombre-acompañante" name="nombre-acompañante" placeholder="Nombres">
                     </li>
                     <li>
-                        <input type="text" id="apellido-acompañante" name="apellido-acompañante" placeholder="Apellidos">
+                        <input type="text" id="apellido-acompañante" name="apellido-acompañante"
+                            placeholder="Apellidos">
                     </li>
                     <li>
                         <label for="documento_responsable">Datos del responsable:</label>
                         <select name="documento_responsable" id="documento_responsable">
-                            <option value="">Seleccione tipo de documento</option>
-                            
+                            <option value="">Seleccione Tipo de documento</option>
+                            <?php
+                                $tpdoc = getTpDoc();
+                                
+                                foreach ($tpdoc as $tpdoc) {
+                                    echo "<option value='" . $tpdoc->id_tpdoc . "'>" . $tpdoc->des_tpdoc . "</option>";
+                                }
+                            ?>
                         </select>
-                        <input type="text" id="numdoc_responsable" name="numdoc_responsable" placeholder="Nro. Documento">
+                        <input type="text" id="numdoc_responsable" name="numdoc_responsable"
+                            placeholder="Nro. Documento">
                     </li>
                     <li>
                         <input type="text" id="nombre-responsable" name="nombre-responsable" placeholder="Nombres">
                     </li>
                     <li>
-                        <input type="text" id="apellido-responsable" name="apellido-responsable" placeholder="Apellidos">
+                        <input type="text" id="apellido-responsable" name="apellido-responsable"
+                            placeholder="Apellidos">
                     </li>
+
                     <li>
                         <label for="tipo_transporte">Medio de transporte:</label>
                         <select name="tipo_transporte" id="tipo_transporte">
                             <option value="">Seleccione</option>
-                            
+                            <?php
+                                $tptrans = getTpTransportes();
+                                
+                                foreach ($tptrans as $tptrans) {
+                                    echo "<option value='" . $tptrans->id_tptrans . "'>" . $tptrans->des_tptrans . "</option>";
+                                }
+                            ?>
                         </select>
                     </li>
                     <li>
@@ -109,17 +146,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <label for="observaciones">Observaciones:</label>
                         <textarea name="observaciones" id="observaciones"></textarea>
                     </li>
-                        <button type="button" id="add-participant">Agregar participante</button>
-                        <ul id="buttons-container">
-                            <li>
-                                <button class="participant-btn" data-role="Madre">Madre</button>
-                                <button class="participant-btn" data-role="Padre">Padre</button>
-                                <button class="participant-btn" data-role="Apoderado">Apoderado</button>
-                                <button class="participant-btn" data-role="Menor">Menor</button>
-                            </li>
-                        </ul>
                     <li>
-                        <input type="submit" value="Crear">
+                        <input type="submit" value="Guardar">
                     </li>
                 </ul>
             </form>
@@ -133,17 +161,17 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 
     <script>
-        // Obtener la fecha actual en formato YYYY-MM-DD
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Los meses son 0-11, por eso sumamos 1
-        const day = String(today.getDate()).padStart(2, '0');
+    // Obtener la fecha actual en formato YYYY-MM-DD
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Los meses son 0-11, por eso sumamos 1
+    const day = String(today.getDate()).padStart(2, '0');
 
-        // Establecer la fecha en el campo de entrada
-        const currentDate = `${year}-${month}-${day}`;
+    // Establecer la fecha en el campo de entrada
+    const currentDate = `${year}-${month}-${day}`;
 
-        // Asignar la fecha al input
-        document.getElementById('fecha-ingreso').value = currentDate;
+    // Asignar la fecha al input
+    document.getElementById('fecha-ingreso').value = currentDate;
     </script>
 
 </body>

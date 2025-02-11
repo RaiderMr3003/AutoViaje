@@ -8,6 +8,7 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "Error de conexión: " . $e->getMessage();
+    error_log("Error de conexión: " . $e->getMessage(), 3, "errors.log");
+    die("Error en la conexión. Contacte al administrador.");
 }
 ?>
