@@ -1,6 +1,7 @@
 <?php
 // Iniciar sesión (debe ser lo primero)
 session_start();
+require '../../config/conexion.php';
 
 // Verificar si el usuario no está logueado
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -8,6 +9,26 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: ../../index.php");
     exit;
 }
+
+// Obtener datos de la tabla autorizaciones
+try {
+    $stmt = $pdo->query("
+        SELECT 
+            a.id_autorizacion, 
+            a.nro_kardex, 
+            a.encargado, 
+            tp.des_tppermi AS tipo_permiso, 
+            a.fecha_ingreso, 
+            a.observaciones 
+        FROM autorizaciones a
+        JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
+        order by a.id_autorizacion ASC
+    ");
+    $autorizaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Error al obtener autorizaciones: " . $e->getMessage());
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -17,10 +38,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/home.css">
-
     <title>AutoViaje</title>
 </head>
-
 <body>
     <header>
         <?php
@@ -89,12 +108,25 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     <tr>
                         <th>N° Control</th>
                         <th>N° Cronológico</th>
+                        <th>Encargado</th>
                         <th>Participantes</th>
                         <th>Tipo de Permiso</th>
                         <th>Fecha</th>
                         <th>Descripción</th>
                     </tr>
                 </thead>
+                <tbody>
+                    <?php foreach ($autorizaciones as $autorizacion) : ?>
+                        <tr>
+                            <td><?= htmlspecialchars($autorizacion['id_autorizacion']) ?></td>
+                            <td><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
+                            <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
+                            <td><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
+                            <td><?= htmlspecialchars($autorizacion['fecha_ingreso']) ?></td>
+                            <td><?= htmlspecialchars($autorizacion['observaciones'] ?? 'N/A') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
             </table>
         </div>
     </div>
@@ -104,3 +136,4 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     require 'includes/footer.php';
     ?>
 </body>
+</html>
