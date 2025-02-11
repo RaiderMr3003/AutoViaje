@@ -33,7 +33,6 @@ require 'includes/functions.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/create_permi.css">
     <title>Editar Autorización</title>
 </head>
 
@@ -47,8 +46,8 @@ require 'includes/functions.php';
             <h1>Editar Autorización</h1>
 
             <?php if (isset($_SESSION['mensaje'])): ?>
-            <p style='color: green;'><?= $_SESSION['mensaje']; ?></p>
-            <?php unset($_SESSION['mensaje']); ?>
+                <p style='color: green;'><?= $_SESSION['mensaje']; ?></p>
+                <?php unset($_SESSION['mensaje']); ?>
             <?php endif; ?>
 
             <form action="guardar_auto.php" method="post">
@@ -184,12 +183,76 @@ require 'includes/functions.php';
         </div>
         <div>
             <!--, Boton de ver participantes -->
-            <button>Ver participantes</button>
+            <button id="ver-participantes">Ver participantes</button>
+            <!-- modal para ver participantes -->
+            <div id="modal-ver-participantes" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Lista de Personas</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Num. Doc.</th>
+                                <th>Apellidos</th>
+                                <th>Nombres</th>
+                                <th>Fecha Nacimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-personas">
+                            <!-- Aquí se insertarán los datos -->
+                        </tbody>
+                    </table>
+                    <button>Añadir Participantes</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <?php require 'includes/footer.php'; ?>
 
+    <script>
+        document.getElementById("ver-participantes").addEventListener("click", function() {
+            let modal = document.getElementById("modal-ver-participantes");
+            modal.style.display = "block";
+
+            // Llamar a la función AJAX para cargar los datos
+            cargarPersonas();
+        });
+
+        document.querySelector(".close").addEventListener("click", function() {
+            document.getElementById("modal-ver-participantes").style.display = "none";
+        });
+
+        function cargarPersonas() {
+            let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let datos = JSON.parse(xhr.responseText);
+                    let tabla = document.getElementById("tabla-personas");
+                    tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
+
+                    if (datos.mensaje) {
+                        tabla.innerHTML = `<tr><td colspan="5">${datos.mensaje}</td></tr>`;
+                    } else {
+                        datos.forEach(function(persona) {
+                            let fila = `<tr>
+                        <td>${persona.id_persona}</td>
+                        <td>${persona.num_doc}</td>
+                        <td>${persona.apellidos}</td>
+                        <td>${persona.nombres}</td>
+                        <td>${persona.fecha_nacimiento}</td>
+                    </tr>`;
+                            tabla.innerHTML += fila;
+                        });
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
 </body>
 
 </html>
