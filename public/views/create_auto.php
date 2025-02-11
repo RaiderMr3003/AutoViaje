@@ -172,6 +172,53 @@ require 'includes/functions.php';
 
     // Asignar la fecha al input
     document.getElementById('fecha-ingreso').value = currentDate;
+
+    document.querySelector("form").addEventListener("submit", function(event) {
+    let errores = [];
+
+    // Obtener valores de los campos
+    let tipoPermiso = document.getElementById("tipo-permiso").value;
+    let viajaA = document.getElementById("viaja-a").value;
+    let medioTransporte = document.getElementById("tipo_transporte").value;
+    let agenciaTransporte = document.getElementById("agencia-de-transporte").value;
+    let desde = document.getElementById("desde").value;
+    let hasta = document.getElementById("hasta").value;
+
+    let docAcomp = document.getElementById("documento_acompañante").value;
+    let numDocAcomp = document.getElementById("numdoc_acompañante").value;
+    let nombreAcomp = document.getElementById("nombre-acompañante").value;
+    let apellidoAcomp = document.getElementById("apellido-acompañante").value;
+
+    let docResp = document.getElementById("documento_responsable").value;
+    let numDocResp = document.getElementById("numdoc_responsable").value;
+    let nombreResp = document.getElementById("nombre-responsable").value;
+    let apellidoResp = document.getElementById("apellido-responsable").value;
+
+    // Validaciones generales
+    if (tipoPermiso === "") errores.push("Debe seleccionar un tipo de permiso.");
+    if (viajaA.trim() === "") errores.push("Debe llenar la casilla Viaja a.");
+
+    // Validar que haya al menos un acompañante o un responsable con todos los datos completos
+    let acompananteCompleto = docAcomp !== "" && numDocAcomp.trim() !== "" && nombreAcomp.trim() !== "" && apellidoAcomp.trim() !== "";
+    let responsableCompleto = docResp !== "" && numDocResp.trim() !== "" && nombreResp.trim() !== "" && apellidoResp.trim() !== "";
+
+    if (!acompananteCompleto && !responsableCompleto) {
+        errores.push("Debe ingresar al menos un acompañante o un responsable con todos sus datos.");
+    }
+
+
+    if (medioTransporte === "") errores.push("Debe seleccionar un medio de transporte.");
+    if (agenciaTransporte.trim() === "") errores.push("Debe ingresar la agencia de transporte.");
+    if (desde === "") errores.push("Debe ingresar la fecha de inicio.");
+    if (hasta === "") errores.push("Debe ingresar la fecha de finalización.");
+
+    // Mostrar errores y evitar el envío si hay problemas
+    if (errores.length > 0) {
+        alert("Errores encontrados:\n- " + errores.join("\n- "));
+        event.preventDefault(); // Evita que el formulario se envíe
+    }
+});
+
     </script>
 
 </body>

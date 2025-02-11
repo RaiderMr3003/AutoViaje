@@ -16,13 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $viaja_a = $_POST['viaja-a'];
 
         // Datos del acompañante
-        $id_tpdoc_acomp = $_POST['documento_acompañante'];
+        $id_tpdoc_acomp = isset($_POST['documento_acompañante']) && $_POST['documento_acompañante'] !== "" ? $_POST['documento_acompañante'] : 10;
         $num_doc_acomp = $_POST['numdoc_acompañante'];
         $nombres_acomp = $_POST['nombre-acompañante'];
         $apellidos_acomp = $_POST['apellido-acompañante'];
 
         // Datos del responsable
-        $id_tpdoc_resp = $_POST['documento_responsable'];
+        $id_tpdoc_resp = isset($_POST['documento_responsable']) && $_POST['documento_responsable'] !== "" ? $_POST['documento_responsable'] : 10;
         $num_doc_resp = $_POST['numdoc_responsable'];
         $nombres_resp = $_POST['nombre-responsable'];
         $apellidos_resp = $_POST['apellido-responsable'];
