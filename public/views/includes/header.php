@@ -1,23 +1,23 @@
-<link rel="stylesheet" href="../views/includes/css/header.css">
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/header.css">
 
-<div id="header">
-  <div class="logo">
-    <a href="home.php">
-      AutoViaje</a>
-  </div>
-  <nav>
-    <ul>
-      <li>
-        <a href="home.php">Buscar</a>
-      </li>
-      <li>
-        <a href="create_auto.php">Crear</a>
-      </li>
-      <li>
-        <a href="#">Exportar</a>
-      </li>
-      <li class="dropdown">
-        <a href="">
+<header class="p-3 mb-3 border-bottom bg-dark">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-between">
+
+      <!-- Logo -->
+      <a href="home.php" class="navbar-brand fw-bold link-light">AutoViaje</a>
+
+      <!-- Navegación -->
+      <ul class="nav col-lg-auto mb-2 mb-lg-0">
+        <li><a href="home.php" class="nav-link px-3 link-light">Inicio</a></li>
+        <li><a href="create_auto.php" class="nav-link px-3 link-light">Crear</a></li>
+        <li><a href="#" class="nav-link px-3 link-light">Exportar</a></li>
+      </ul>
+
+      <!-- Usuario / Logout -->
+      <div class="dropdown text-end">
+        <a href="#" class="d-block text-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
           <?php
           if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
             echo htmlspecialchars($_SESSION['username']);
@@ -26,10 +26,11 @@
           }
           ?>
         </a>
-        <ul>
-          <li><a href="../views/auth/logout.php">Cerrar sesión</a></li>
+        <ul class="dropdown-menu text-small">
+          <li><a class="dropdown-item" href="../views/auth/logout.php">Cerrar sesión</a></li>
         </ul>
-      </li>
-    </ul>
-  </nav>
-</div>
+      </div>
+    </div>
+  </div>
+</header>
+<script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
