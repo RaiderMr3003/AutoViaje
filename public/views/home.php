@@ -40,6 +40,7 @@ try {
     <link rel="stylesheet" href="css/home.css">
     <title>AutoViaje</title>
 </head>
+
 <body>
     <header>
         <?php
@@ -55,31 +56,26 @@ try {
 
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="nro-control">N° de Control:</label>
-                    <input type="text" id="nro-control" name="nro-control">
-                </div>
-
-                <div class="form-group">
-                    <label for="nro-crono">N° Cronológico:</label>
-                    <input type="text" id="nro-crono" name="nro-crono">
-                </div>
-
-                <div class="form-group">
-                    <label for="tipo-permiso">Tipo de Permiso:</label>
                     <select id="tipo-permiso" name="tipo-permiso">
-                        <option value="">Seleccione</option>
-                        
+                        <option value="">Seleccione Tipo de Permiso</option>
+
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="nombre-participante">Nombre del Participante:</label>
-                    <input type="text" id="nombre-participante" name="nombre-participante">
+                    <input type="text" id="nro-control" name="nro-control" placeholder="N° de Control">
                 </div>
 
                 <div class="form-group">
-                    <label for="nombre-responsable">Nombre del Responsable:</label>
-                    <input type="text" id="nombre-responsable" name="nombre-responsable">
+                    <input type="text" id="nro-crono" name="nro-crono" placeholder="N° Cronológico">
+                </div>
+
+                <div>
+                    <input type="text" id="encargado" name="encargado" placeholder="Usuario Encargado">
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="nombre-participante" name="nombre-participante" placeholder="Nombre del Participante">
                 </div>
 
                 <div class="form-group">
@@ -113,12 +109,15 @@ try {
                         <th>Tipo de Permiso</th>
                         <th>Fecha</th>
                         <th>Descripción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($autorizaciones as $autorizacion) : ?>
                         <tr>
-                            <td><?= htmlspecialchars($autorizacion['id_autorizacion']) ?></td>
+                            <td onclick="window.location.href='edit_auto.php?id=<?= $autorizacion['id_autorizacion'] ?>'" style="cursor:pointer; color:blue; text-decoration:underline;">
+                                <?= htmlspecialchars($autorizacion['id_autorizacion']) ?>
+                            </td>
                             <td><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
                             <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
                             <td><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
@@ -136,4 +135,5 @@ try {
     require 'includes/footer.php';
     ?>
 </body>
+
 </html>
