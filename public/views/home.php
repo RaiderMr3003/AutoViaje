@@ -52,8 +52,6 @@ try {
     <div class="main-container">
         <!-- Panel de Búsqueda -->
         <div class="container">
-            <h2>Autorizaciones de Viaje</h2><br>
-
             <form method="POST" action="">
                 <div class="form-group">
                     <select id="tipo-permiso" name="tipo-permiso">
@@ -99,7 +97,7 @@ try {
 
         <!-- Tabla de Resultados -->
         <div class="table-container">
-            <table id="resultados">
+            <table id="resultados" class="table">
                 <thead>
                     <tr>
                         <th>N° Control</th>

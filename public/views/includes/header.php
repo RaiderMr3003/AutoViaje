@@ -1,5 +1,4 @@
 <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="css/header.css">
 
 <header class="p-3 mb-3 border-bottom bg-dark">
   <div class="container">
