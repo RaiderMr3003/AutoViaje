@@ -49,84 +49,106 @@ try {
         ?>
     </header>
 
-    <div class="main-container">
-        <!-- Panel de Búsqueda -->
-        <div class="container">
-            <form method="POST" action="">
-                <div class="form-group">
-                    <select id="tipo-permiso" name="tipo-permiso">
-                        <option value="">Seleccione Tipo de Permiso</option>
+    <div class="container-fluid my-3" style="padding-left: 7rem; padding-right: 7rem;">
+        <div class="row">
+            <!-- Panel de Búsqueda - Ocupa 4 columnas -->
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white text-center">
+                        <h6 class="mb-1 text-center">Buscar Autorizaciones</h6>
+                    </div>
+                    <form method="POST" action="" class="p-3">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="tipo-permiso" class="form-label">Tipo de Permiso</label>
+                                <select id="tipo-permiso" name="tipo-permiso" class="form-select">
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
 
-                    </select>
-                </div>
+                            <div class="col-12">
+                                <label for="nro-control" class="form-label">N° de Control</label>
+                                <input type="text" id="nro-control" name="nro-control" class="form-control">
+                            </div>
 
-                <div class="form-group">
-                    <input type="text" id="nro-control" name="nro-control" placeholder="N° de Control">
-                </div>
+                            <div class="col-12">
+                                <label for="nro-crono" class="form-label">N° Cronológico</label>
+                                <input type="text" id="nro-crono" name="nro-crono" class="form-control">
+                            </div>
 
-                <div class="form-group">
-                    <input type="text" id="nro-crono" name="nro-crono" placeholder="N° Cronológico">
-                </div>
+                            <div class="col-12">
+                                <label for="encargado" class="form-label">Usuario Encargado</label>
+                                <input type="text" id="encargado" name="encargado" class="form-control">
+                            </div>
 
-                <div>
-                    <input type="text" id="encargado" name="encargado" placeholder="Usuario Encargado">
-                </div>
+                            <div class="col-12">
+                                <label for="nombre-participante" class="form-label">Nombre del Participante</label>
+                                <input type="text" id="nombre-participante" name="nombre-participante"
+                                    class="form-control">
+                            </div>
 
-                <div class="form-group">
-                    <input type="text" id="nombre-participante" name="nombre-participante" placeholder="Nombre del Participante">
-                </div>
+                            <div class="col-12">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label for="fecha-min" class="form-label">Fecha Min</label>
+                                        <input type="date" id="fecha-min" name="fecha-min" class="form-control">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="fecha-max" class="form-label">Fecha Max</label>
+                                        <input type="date" id="fecha-max" name="fecha-max" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
 
-                <div class="form-group">
-                    <label>Búsqueda por Fechas:</label>
-                    <div class="date-range">
-                        <div class="date-field">
-                            <label for="fecha-min">Fecha Min</label>
-                            <input type="date" id="fecha-min" name="fecha-min">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                            </div>
                         </div>
-                        <div class="date-field">
-                            <label for="fecha-max">Fecha Max</label>
-                            <input type="date" id="fecha-max" name="fecha-max">
-                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla de Resultados - Ocupa 8 columnas -->
+            <div class="col-md-9 mb-4">
+                <div class="card shadow">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover text-center table-bordered">
+                            <thead class="table-dark">
+                                <tr class="">
+                                    <th>N° Control</th>
+                                    <th>N° Cronológico</th>
+                                    <th>Encargado</th>
+                                    <th>Participantes</th>
+                                    <th>Tipo de Permiso</th>
+                                    <th>Fecha</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($autorizaciones as $autorizacion) : ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($autorizacion['id_autorizacion']) ?></td>
+                                    <td><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
+                                    <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
+                                    <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
+                                    <td><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
+                                    <td><?= htmlspecialchars($autorizacion['fecha_ingreso']) ?></td>
+                                    <td><?= htmlspecialchars($autorizacion['observaciones'] ?? 'N/A') ?></td>
+                                    <td>
+                                        <a href="edit_auto.php?id=<?= $autorizacion['id_autorizacion'] ?>"
+                                            class="btn btn-sm btn-warning">Editar</a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <button type="submit">Buscar</button>
-            </form>
-
-        </div>
-
-        <!-- Tabla de Resultados -->
-        <div class="table-container">
-            <table id="resultados" class="table">
-                <thead>
-                    <tr>
-                        <th>N° Control</th>
-                        <th>N° Cronológico</th>
-                        <th>Encargado</th>
-                        <th>Participantes</th>
-                        <th>Tipo de Permiso</th>
-                        <th>Fecha</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($autorizaciones as $autorizacion) : ?>
-                        <tr>
-                            <td onclick="window.location.href='edit_auto.php?id=<?= $autorizacion['id_autorizacion'] ?>'" style="cursor:pointer; color:blue; text-decoration:underline;">
-                                <?= htmlspecialchars($autorizacion['id_autorizacion']) ?>
-                            </td>
-                            <td><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
-                            <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
-                            <td><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
-                            <td><?= htmlspecialchars($autorizacion['fecha_ingreso']) ?></td>
-                            <td><?= htmlspecialchars($autorizacion['observaciones'] ?? 'N/A') ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+            </div>
         </div>
     </div>
+
 
     <?php
     // Asegúrate de que la ruta de footer.php sea correcta

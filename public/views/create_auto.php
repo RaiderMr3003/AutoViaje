@@ -18,7 +18,6 @@ require 'includes/functions.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/create_permi.css">
 
     <title>AutoViaje</title>
 </head>
@@ -31,126 +30,137 @@ require 'includes/functions.php';
         ?>
     </header>
 
-    <div class="main-container">
-        <!-- Panel de Creación de Permiso -->
-        <div class="container">
-            <h1>Autorizaciones de Viaje</h1>
-            <?php
-                if (isset($_SESSION['mensaje'])) {
-                    echo "<p style='color: green;'>" . $_SESSION['mensaje'] . "</p>";
-                    unset($_SESSION['mensaje']); // Elimina el mensaje después de mostrarlo
-                }
-            ?>
-            <form action="guardar_auto.php" method="post">
-                <ul>
-                    <li>
-                        <label for="nro-control">N° Control:</label>
-                        <input type="text" id="id_control" name="id_control">
-                    </li>
+    <div class="container mt-3 mb-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-dark text-white text-center">
+                <h2>Registrar Autorizaciones de Viaje</h2>
+            </div>
+            <div class="card-body">
+                <?php if (isset($_SESSION['mensaje'])) : ?>
+                <div class="alert alert-success">
+                    <?= $_SESSION['mensaje']; ?>
+                </div>
+                <?php unset($_SESSION['mensaje']); ?>
+                <?php endif; ?>
 
-                    <li>
-                        <label for="tipo-permiso">Tipo de Permiso:</label>
-                        <select id="tipo-permiso" name="tipo-permiso">
+                <form action="guardar_auto.php" method="post" class="row g-3">
+
+                    <div class="col-md-4">
+                        <label for="id_control" class="form-label">N° Control:</label>
+                        <input type="text" class="form-control" id="id_control" name="id_control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="tipo-permiso" class="form-label">Tipo de Permiso:</label>
+                        <select class="form-select" id="tipo-permiso" name="tipo-permiso">
                             <option value="">Seleccione</option>
-                            <?php
-                            $permisos = getTpPermisos();
-                            
-                            foreach ($permisos as $permiso) {
-                                echo "<option value='" . $permiso->id_tppermi . "'>" . $permiso->des_tppermi . "</option>";
-                            }
-                            ?>
+                            <?php foreach (getTpPermisos() as $permiso) : ?>
+                            <option value="<?= $permiso->id_tppermi ?>"><?= $permiso->des_tppermi ?></option>
+                            <?php endforeach; ?>
                         </select>
-                    </li>
+                    </div>
 
-                    <li>
-                        <label for="fecha-ingreso">Fecha de ingreso:</label>
-                        <input type="date" id="fecha-ingreso" name="fecha-ingreso" disabled>
-                    </li>
+                    <div class="col-md-4">
+                        <label for="fecha-ingreso" class="form-label">Fecha de ingreso:</label>
+                        <input type="date" class="form-control" id="fecha-ingreso" name="fecha-ingreso" disabled>
+                    </div>
 
-                    <li>
-                        <label for="Viaja-a">Viaja a:</label>
-                        <input type="text" id="viaja-a" name="viaja-a">
-                    </li>
+                    <div class="col-md-12">
+                        <label for="viaja-a" class="form-label">Viaja a:</label>
+                        <input type="text" class="form-control" id="viaja-a" name="viaja-a">
+                    </div>
 
-                    <li>
-                        <label for="documento_acompañante">Datos del acompañante:</label>
-                        <select name="documento_acompañante" id="documento_acompañante">
-                            <option value="">Seleccione Tipo de documento</option>
-                            <?php
-                                $tpdoc = getTpDoc();
-                                
-                                foreach ($tpdoc as $tpdoc) {
-                                    echo "<option value='" . $tpdoc->id_tpdoc . "'>" . $tpdoc->des_tpdoc . "</option>";
-                                }
-                            ?>
-                        </select>
-                        <input type="text" id="numdoc_acompañante" name="numdoc_acompañante"
-                            placeholder="Nro. Documento">
-                    </li>
-                    <li>
-                        <input type="text" id="nombre-acompañante" name="nombre-acompañante" placeholder="Nombres">
-                    </li>
-                    <li>
-                        <input type="text" id="apellido-acompañante" name="apellido-acompañante"
-                            placeholder="Apellidos">
-                    </li>
-                    <li>
-                        <label for="documento_responsable">Datos del responsable:</label>
-                        <select name="documento_responsable" id="documento_responsable">
-                            <option value="">Seleccione Tipo de documento</option>
-                            <?php
-                                $tpdoc = getTpDoc();
-                                
-                                foreach ($tpdoc as $tpdoc) {
-                                    echo "<option value='" . $tpdoc->id_tpdoc . "'>" . $tpdoc->des_tpdoc . "</option>";
-                                }
-                            ?>
-                        </select>
-                        <input type="text" id="numdoc_responsable" name="numdoc_responsable"
-                            placeholder="Nro. Documento">
-                    </li>
-                    <li>
-                        <input type="text" id="nombre-responsable" name="nombre-responsable" placeholder="Nombres">
-                    </li>
-                    <li>
-                        <input type="text" id="apellido-responsable" name="apellido-responsable"
-                            placeholder="Apellidos">
-                    </li>
-
-                    <li>
-                        <label for="tipo_transporte">Medio de transporte:</label>
-                        <select name="tipo_transporte" id="tipo_transporte">
+                    <!-- Datos del Acompañante -->
+                    <div class="col-md-3">
+                        <label for="documento_acompañante" class="form-label">Tipo de documento (Acompañante):</label>
+                        <select class="form-select" name="documento_acompañante" id="documento_acompañante">
                             <option value="">Seleccione</option>
-                            <?php
-                                $tptrans = getTpTransportes();
-                                
-                                foreach ($tptrans as $tptrans) {
-                                    echo "<option value='" . $tptrans->id_tptrans . "'>" . $tptrans->des_tptrans . "</option>";
-                                }
-                            ?>
+                            <?php foreach (getTpDoc() as $tpdoc) : ?>
+                            <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
+                            <?php endforeach; ?>
                         </select>
-                    </li>
-                    <li>
-                        <label for="agencia-de-transporte">Agencia de transporte:</label>
-                        <input type="text" id="agencia-de-transporte" name="agencia-de-transporte">
-                    </li>
-                    <li>
-                        <label for="desde">Desde:</label>
-                        <input type="date" id="desde" name="desde">
-                    </li>
-                    <li>
-                        <label for="hasta">Hasta:</label>
-                        <input type="date" id="hasta" name="hasta">
-                    </li>
-                    <li>
-                        <label for="observaciones">Observaciones:</label>
-                        <textarea name="observaciones" id="observaciones"></textarea>
-                    </li>
-                    <li>
-                        <input type="submit" value="Guardar">
-                    </li>
-                </ul>
-            </form>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="numdoc_acompañante" class="form-label">Nro. Documento:</label>
+                        <input type="text" class="form-control" id="numdoc_acompañante" name="numdoc_acompañante">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="nombre-acompañante" class="form-label">Nombres (Acompañante):</label>
+                        <input type="text" class="form-control" id="nombre-acompañante" name="nombre-acompañante">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="apellido-acompañante" class="form-label">Apellidos (Acompañante):</label>
+                        <input type="text" class="form-control" id="apellido-acompañante" name="apellido-acompañante">
+                    </div>
+
+                    <!-- Datos del Responsable -->
+                    <div class="col-md-3">
+                        <label for="documento_responsable" class="form-label">Tipo de documento (Responsable):</label>
+                        <select class="form-select" name="documento_responsable" id="documento_responsable">
+                            <option value="">Seleccione</option>
+                            <?php foreach (getTpDoc() as $tpdoc) : ?>
+                            <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="numdoc_responsable" class="form-label">Nro. Documento:</label>
+                        <input type="text" class="form-control" id="numdoc_responsable" name="numdoc_responsable">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="nombre-responsable" class="form-label">Nombres (Responsable):</label>
+                        <input type="text" class="form-control" id="nombre-responsable" name="nombre-responsable">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="apellido-responsable" class="form-label">Apellidos (Responsable):</label>
+                        <input type="text" class="form-control" id="apellido-responsable" name="apellido-responsable">
+                    </div>
+
+                    <!-- Transporte -->
+                    <div class="col-md-3">
+                        <label for="tipo_transporte" class="form-label">Medio de transporte:</label>
+                        <select class="form-select" name="tipo_transporte" id="tipo_transporte">
+                            <option value="">Seleccione</option>
+                            <?php foreach (getTpTransportes() as $tptrans) : ?>
+                            <option value="<?= $tptrans->id_tptrans ?>"><?= $tptrans->des_tptrans ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="agencia-de-transporte" class="form-label">Agencia de transporte:</label>
+                        <input type="text" class="form-control" id="agencia-de-transporte" name="agencia-de-transporte">
+                    </div>
+
+                    <!-- Fechas -->
+                    <div class="col-md-3">
+                        <label for="desde" class="form-label">Desde:</label>
+                        <input type="date" class="form-control" id="desde" name="desde">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="hasta" class="form-label">Hasta:</label>
+                        <input type="date" class="form-control" id="hasta" name="hasta">
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="col-12">
+                        <label for="observaciones" class="form-label">Observaciones:</label>
+                        <textarea class="form-control" name="observaciones" id="observaciones"></textarea>
+                    </div>
+
+                    <!-- Botón de Guardar -->
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -174,51 +184,52 @@ require 'includes/functions.php';
     document.getElementById('fecha-ingreso').value = currentDate;
 
     document.querySelector("form").addEventListener("submit", function(event) {
-    let errores = [];
+        let errores = [];
 
-    // Obtener valores de los campos
-    let tipoPermiso = document.getElementById("tipo-permiso").value;
-    let viajaA = document.getElementById("viaja-a").value;
-    let medioTransporte = document.getElementById("tipo_transporte").value;
-    let agenciaTransporte = document.getElementById("agencia-de-transporte").value;
-    let desde = document.getElementById("desde").value;
-    let hasta = document.getElementById("hasta").value;
+        // Obtener valores de los campos
+        let tipoPermiso = document.getElementById("tipo-permiso").value;
+        let viajaA = document.getElementById("viaja-a").value;
+        let medioTransporte = document.getElementById("tipo_transporte").value;
+        let agenciaTransporte = document.getElementById("agencia-de-transporte").value;
+        let desde = document.getElementById("desde").value;
+        let hasta = document.getElementById("hasta").value;
 
-    let docAcomp = document.getElementById("documento_acompañante").value;
-    let numDocAcomp = document.getElementById("numdoc_acompañante").value;
-    let nombreAcomp = document.getElementById("nombre-acompañante").value;
-    let apellidoAcomp = document.getElementById("apellido-acompañante").value;
+        let docAcomp = document.getElementById("documento_acompañante").value;
+        let numDocAcomp = document.getElementById("numdoc_acompañante").value;
+        let nombreAcomp = document.getElementById("nombre-acompañante").value;
+        let apellidoAcomp = document.getElementById("apellido-acompañante").value;
 
-    let docResp = document.getElementById("documento_responsable").value;
-    let numDocResp = document.getElementById("numdoc_responsable").value;
-    let nombreResp = document.getElementById("nombre-responsable").value;
-    let apellidoResp = document.getElementById("apellido-responsable").value;
+        let docResp = document.getElementById("documento_responsable").value;
+        let numDocResp = document.getElementById("numdoc_responsable").value;
+        let nombreResp = document.getElementById("nombre-responsable").value;
+        let apellidoResp = document.getElementById("apellido-responsable").value;
 
-    // Validaciones generales
-    if (tipoPermiso === "") errores.push("Debe seleccionar un tipo de permiso.");
-    if (viajaA.trim() === "") errores.push("Debe llenar la casilla Viaja a.");
+        // Validaciones generales
+        if (tipoPermiso === "") errores.push("Debe seleccionar un tipo de permiso.");
+        if (viajaA.trim() === "") errores.push("Debe llenar la casilla Viaja a.");
 
-    // Validar que haya al menos un acompañante o un responsable con todos los datos completos
-    let acompananteCompleto = docAcomp !== "" && numDocAcomp.trim() !== "" && nombreAcomp.trim() !== "" && apellidoAcomp.trim() !== "";
-    let responsableCompleto = docResp !== "" && numDocResp.trim() !== "" && nombreResp.trim() !== "" && apellidoResp.trim() !== "";
+        // Validar que haya al menos un acompañante o un responsable con todos los datos completos
+        let acompananteCompleto = docAcomp !== "" && numDocAcomp.trim() !== "" && nombreAcomp.trim() !== "" &&
+            apellidoAcomp.trim() !== "";
+        let responsableCompleto = docResp !== "" && numDocResp.trim() !== "" && nombreResp.trim() !== "" &&
+            apellidoResp.trim() !== "";
 
-    if (!acompananteCompleto && !responsableCompleto) {
-        errores.push("Debe ingresar al menos un acompañante o un responsable con todos sus datos.");
-    }
+        if (!acompananteCompleto && !responsableCompleto) {
+            errores.push("Debe ingresar al menos un acompañante o un responsable con todos sus datos.");
+        }
 
 
-    if (medioTransporte === "") errores.push("Debe seleccionar un medio de transporte.");
-    if (agenciaTransporte.trim() === "") errores.push("Debe ingresar la agencia de transporte.");
-    if (desde === "") errores.push("Debe ingresar la fecha de inicio.");
-    if (hasta === "") errores.push("Debe ingresar la fecha de finalización.");
+        if (medioTransporte === "") errores.push("Debe seleccionar un medio de transporte.");
+        if (agenciaTransporte.trim() === "") errores.push("Debe ingresar la agencia de transporte.");
+        if (desde === "") errores.push("Debe ingresar la fecha de inicio.");
+        if (hasta === "") errores.push("Debe ingresar la fecha de finalización.");
 
-    // Mostrar errores y evitar el envío si hay problemas
-    if (errores.length > 0) {
-        alert("Errores encontrados:\n- " + errores.join("\n- "));
-        event.preventDefault(); // Evita que el formulario se envíe
-    }
-});
-
+        // Mostrar errores y evitar el envío si hay problemas
+        if (errores.length > 0) {
+            alert("Errores encontrados:\n- " + errores.join("\n- "));
+            event.preventDefault(); // Evita que el formulario se envíe
+        }
+    });
     </script>
 
 </body>

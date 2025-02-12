@@ -2,7 +2,7 @@
 
 <header class="p-3 mb-3 border-bottom bg-dark">
   <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-between">
+    <div class="d-flex flex-wrap align-items-center justify-content-between ">
 
       <!-- Logo -->
       <a href="home.php" class="navbar-brand fw-bold link-light">AutoViaje</a>
