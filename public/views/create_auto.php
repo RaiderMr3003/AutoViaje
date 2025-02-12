@@ -208,19 +208,7 @@ require 'includes/functions.php';
         if (tipoPermiso === "") errores.push("Debe seleccionar un tipo de permiso.");
         if (viajaA.trim() === "") errores.push("Debe llenar la casilla Viaja a.");
 
-        // Validar que haya al menos un acompañante o un responsable con todos los datos completos
-        let acompananteCompleto = docAcomp !== "" && numDocAcomp.trim() !== "" && nombreAcomp.trim() !== "" &&
-            apellidoAcomp.trim() !== "";
-        let responsableCompleto = docResp !== "" && numDocResp.trim() !== "" && nombreResp.trim() !== "" &&
-            apellidoResp.trim() !== "";
-
-        if (!acompananteCompleto && !responsableCompleto) {
-            errores.push("Debe ingresar al menos un acompañante o un responsable con todos sus datos.");
-        }
-
-
         if (medioTransporte === "") errores.push("Debe seleccionar un medio de transporte.");
-        if (agenciaTransporte.trim() === "") errores.push("Debe ingresar la agencia de transporte.");
         if (desde === "") errores.push("Debe ingresar la fecha de inicio.");
         if (hasta === "") errores.push("Debe ingresar la fecha de finalización.");
 

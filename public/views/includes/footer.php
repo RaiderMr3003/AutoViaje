@@ -50,7 +50,7 @@
     <p>&copy; 2025 AutoViaje. Todos los derechos reservados.</p>
     
     <div class="legal__links">
-      <span>Hecho por CP. Company</span>
+      <a style="color:gray" target="_blank" href="https://github.com/RaiderMr3003">Hecho por RaiderMr - Máximo Mercado Racchumí</a>
     </div>
   </div>
 </footer>
