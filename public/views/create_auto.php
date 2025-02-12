@@ -43,7 +43,7 @@ require 'includes/functions.php';
                 <?php unset($_SESSION['mensaje']); ?>
                 <?php endif; ?>
 
-                <form action="guardar_auto.php" method="post" class="row g-3">
+                <form action="guardar_auto.php" method="post" class="row g-3" autocomplete="off">
 
                     <div class="col-md-4">
                         <label for="id_control" class="form-label">N° Control:</label>

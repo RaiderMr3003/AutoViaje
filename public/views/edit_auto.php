@@ -54,7 +54,7 @@ require 'includes/functions.php';
                 <?php unset($_SESSION['mensaje']); ?>
                 <?php endif; ?>
 
-                <form action="guardar_auto.php" method="post" class="row g-3">
+                <form action="guardar_auto.php" method="post" class="row g-3" autocomplete="off">
                     <input type="hidden" name="id" value="<?= $id_autorizacion ?>">
 
                     <div class="col-md-4">
@@ -220,12 +220,14 @@ require 'includes/functions.php';
                                         <tr class="text-center">
                                             <th>ID</th>
                                             <th>Num. Doc.</th>
-                                            <th>Apellidos</th>
-                                            <th>Nombres</th>
+                                            <th>Apellidos y Nombres</th>
                                             <th>Fecha Nacimiento</th>
+                                            <th>Tipo de Relación</th>
+                                            <th>Firma</th>
+                                            <th>Representado</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tabla-personas" class="text-center">
+                                    <tbody id="tabla-personas">
                                         <!-- Aquí se insertarán los datos -->
                                     </tbody>
                                 </table>
@@ -251,7 +253,9 @@ require 'includes/functions.php';
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                Aqui ira el formulario para añadir a las personas
+                                <form action="">
+                                    
+                                </form>
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-secondary" data-bs-target="#modal-ver-participantes" data-bs-toggle="modal">Cerrar</button>
@@ -299,9 +303,11 @@ require 'includes/functions.php';
                         let fila = `<tr>
                         <td>${persona.id_persona}</td>
                         <td>${persona.num_doc}</td>
-                        <td>${persona.apellidos}</td>
-                        <td>${persona.nombres}</td>
+                        <td>${persona.nombre_completo}</td>
                         <td>${persona.fecha_nacimiento}</td>
+                        <td>${persona.tipo_relacion}</td>
+                        <td>${persona.firma}</td>
+                        <td>${persona.en_representacion}</td>
                     </tr>`;
                         tabla.innerHTML += fila;
                     });
