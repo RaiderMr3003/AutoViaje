@@ -28,6 +28,7 @@ try {
         LEFT JOIN representantes r ON p.id_persona = r.id_representante
         LEFT JOIN personas pr ON r.id_representado = pr.id_persona
         WHERE pa.id_autorizacion = :id_autorizacion
+        ORDER BY p.id_persona
     ");
     $stmt->execute([':id_autorizacion' => $id_autorizacion]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -48,10 +48,10 @@ require 'includes/functions.php';
             </div>
             <div class="card-body">
                 <?php if (isset($_SESSION['mensaje'])) : ?>
-                <div class="alert alert-success">
-                    <?= $_SESSION['mensaje']; ?>
-                </div>
-                <?php unset($_SESSION['mensaje']); ?>
+                    <div class="alert alert-success">
+                        <?= $_SESSION['mensaje']; ?>
+                    </div>
+                    <?php unset($_SESSION['mensaje']); ?>
                 <?php endif; ?>
 
                 <form action="guardar_auto.php" method="post" class="row g-3" autocomplete="off">
@@ -245,7 +245,7 @@ require 'includes/functions.php';
                 <div id="modal-añadir-participantes" class="modal fade" data-bs-backdrop="static"
                     data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-añadir-participantes"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="modal-añadir-participantes">Añadir Participantes</h1>
@@ -253,12 +253,97 @@ require 'includes/functions.php';
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action="">
-                                    
+                                <form action="" method="post" class="row g-3" autocomplete="off">
+                                    <input type="hidden" name="id" value="<?= $id_autorizacion ?>">
+
+                                    <div class="col-md-3">
+                                        <label for="documento_persona" class="form-label">Tipo de documento:</label>
+                                        <select class="form-select" name="documento_persona" id="documento_persona">
+                                            <option value="">Seleccione</option>
+                                            <?php foreach (getTpDoc() as $tpdoc) : ?>
+                                                <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="numdoc_persona" class="form-label">Nro. Documento:</label>
+                                        <input class="form-control" type="text" id="numdoc_persona" name="numdoc_persona">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="condicion" class="form-label">Condición:</label>
+                                        <select class="form-select" name="condicion" id="condicion">
+                                            <option value="">Seleccione</option>
+                                            <?php foreach (getCondicion() as $condicion) : ?>
+                                                <option value="<?= $condicion->id_tp_relacion ?>"><?= $condicion->descripcion ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="firma" class="form-label">Firma:</label>
+                                        <select name="firma" id="firma" class="form-select">
+                                            <option value="">Seleccione</option>
+                                            <?php
+                                            // Llamar a la función para obtener las opciones de firma
+                                            foreach (getFirma() as $opcion) {
+                                                echo '<option value="' . htmlspecialchars($opcion) . '">' . htmlspecialchars($opcion) . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+
+                                    <!-- div oculto, si es un testigo -->
+                                    <div class="col-md-12" id="testigos">
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <label for="testigo-persona" class="form-label">Testigo de:</label>
+                                                <input class="form-control" type="text" id="testigo-persona" name="testigo-persona">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="discapacidad" class="form-label">Tipo:</label>
+                                                <input class="form-control" type="text" id="discapacidad" name="discapacidad">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="nombre-persona" class="form-label">Nombres:</label>
+                                        <input class="form-control" type="text" id="nombre-persona" name="nombre-persona">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="apellido-persona" class="form-label">Apellidos:</label>
+                                        <input class="form-control" type="text" id="apellido-persona" name="apellido-persona">
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label for="direccion-persona" class="form-label">Dirección:</label>
+                                        <input class="form-control" type="text" id="direccion-persona" name="direccion-persona">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="Ubigeo-persona" class="form-label">Ubigeo:</label>
+                                        <input class="form-control" type="text" id="Ubigeo-persona" name="Ubigeo-persona">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="nacionalidad" class="form-label">Nacionalidad:</label>
+                                        <input class="form-control" type="text" id="nacionalidad" name="nacionalidad">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="en_representacion" name="en_representacion">
+                                            <label class="form-check-label" for="en_representacion">En representación</label>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button class="btn btn-secondary" data-bs-target="#modal-ver-participantes" data-bs-toggle="modal">Cerrar</button>
+                                <button class="btn btn-secondary" data-bs-target="#modal-ver-participantes"
+                                    data-bs-toggle="modal">Cerrar</button>
                                 <button class="btn btn-primary">Añadir Participantes</button>
                             </div>
                         </div>
@@ -269,38 +354,38 @@ require 'includes/functions.php';
     </div>
 
     <?php
-        // Asegúrate de que la ruta de footer.php sea correcta
-        require 'includes/footer.php';
-        ?>
+    // Asegúrate de que la ruta de footer.php sea correcta
+    require 'includes/footer.php';
+    ?>
 
     <script>
-    document.getElementById("ver-participantes").addEventListener("click", function() {
-        let modal = document.getElementById("modal-ver-participantes");
-        modal.style.display = "block";
+        document.getElementById("ver-participantes").addEventListener("click", function() {
+            let modal = document.getElementById("modal-ver-participantes");
+            modal.style.display = "block";
 
-        // Llamar a la función AJAX para cargar los datos
-        cargarPersonas();
-    });
+            // Llamar a la función AJAX para cargar los datos
+            cargarPersonas();
+        });
 
-    document.querySelector(".close").addEventListener("click", function() {
-        document.getElementById("modal-ver-participantes").style.display = "none";
-    });
+        document.querySelector(".close").addEventListener("click", function() {
+            document.getElementById("modal-ver-participantes").style.display = "none";
+        });
 
-    function cargarPersonas() {
-        let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                let datos = JSON.parse(xhr.responseText);
-                let tabla = document.getElementById("tabla-personas");
-                tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
+        function cargarPersonas() {
+            let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let datos = JSON.parse(xhr.responseText);
+                    let tabla = document.getElementById("tabla-personas");
+                    tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
 
-                if (datos.mensaje) {
-                    tabla.innerHTML = `<tr><td colspan="5">${datos.mensaje}</td></tr>`;
-                } else {
-                    datos.forEach(function(persona) {
-                        let fila = `<tr>
+                    if (datos.mensaje) {
+                        tabla.innerHTML = `<tr><td colspan="5">${datos.mensaje}</td></tr>`;
+                    } else {
+                        datos.forEach(function(persona) {
+                            let fila = `<tr>
                         <td>${persona.id_persona}</td>
                         <td>${persona.num_doc}</td>
                         <td>${persona.nombre_completo}</td>
@@ -309,13 +394,13 @@ require 'includes/functions.php';
                         <td>${persona.firma}</td>
                         <td>${persona.en_representacion}</td>
                     </tr>`;
-                        tabla.innerHTML += fila;
-                    });
+                            tabla.innerHTML += fila;
+                        });
+                    }
                 }
-            }
-        };
-        xhr.send();
-    }
+            };
+            xhr.send();
+        }        
     </script>
 
 </body>
