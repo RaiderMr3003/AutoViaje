@@ -329,7 +329,7 @@ require 'includes/functions.php';
                                     <div class="col-md-12">
                                         <div id="representantes" class="oculto">
                                             <div class="row g-2">
-                                                <div class="col-md-4">
+                                                <div class="col-md-12">
                                                     <label for="representante-persona" class="form-label">Representante de:</label>
                                                     <select name="representante-persona" id="representante-persona" class="form-select">
                                                         <option value="">Seleccione</option>
@@ -341,44 +341,9 @@ require 'includes/functions.php';
                                                         ?>
                                                     </select>
                                                 </div>
-
-                                                <div class="col-md-4">
-                                                    <label for="nro-partida-electronica" class="form-label">Nro. Partida Electrónica:</label>
-                                                    <input class="form-control" type="text" id="nro-partida-electronica" name="nro-partida-electronica">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="sede-registral" class="form-label">Sede Registral:</label>
-                                                    <input class="form-control" type="text" id="sede-registral" name="sede-registral">
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-md-12">
-                                        <div id="testigos" class="oculto">
-                                            <div class="row g-2">
-                                                <div class="col-md-6">
-                                                    <label for="testigo-persona" class="form-label">Testigo de:</label>
-                                                    <select name="testigo-persona" id="testigo-persona" class="form-select">
-                                                        <option value="">Seleccione</option>
-                                                        <?php
-                                                        $participantes = getParticipantes($id_autorizacion); // Pasamos el ID de autorización
-                                                        foreach ($participantes as $participante) {
-                                                            echo '<option value="' . htmlspecialchars($participante->nombre_completo) . '">' . htmlspecialchars($participante->nombre_completo) . '</option>';
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="discapacidad" class="form-label">Tipo:</label>
-                                                    <select name="discapacidad" id="discapacidad" class="form-select">
-                                                        <option value="">Seleccione</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -414,22 +379,6 @@ require 'includes/functions.php';
             // Verificar el estado inicial al cargar la página
             toggleVisibility(enRepresentacion, representantes);
         });
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const condicion = document.getElementById("condicion");
-
-            function toggleVisibility(select, target) {
-                target.style.display = select.value === "4" ? "block" : "none";
-            }
-
-            condicion.addEventListener("change", function() {
-                toggleVisibility(condicion, testigos);
-            });
-
-            // Verificar el estado inicial al cargar la página
-            toggleVisibility(condicion, testigos);
-        });
-
         
         document.getElementById("ver-participantes").addEventListener("click", function() {
             let modal = document.getElementById("modal-ver-participantes");
