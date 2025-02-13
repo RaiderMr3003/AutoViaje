@@ -48,10 +48,10 @@ require 'includes/functions.php';
             </div>
             <div class="card-body">
                 <?php if (isset($_SESSION['mensaje'])) : ?>
-                <div class="alert alert-success">
-                    <?= $_SESSION['mensaje']; ?>
-                </div>
-                <?php unset($_SESSION['mensaje']); ?>
+                    <div class="alert alert-success">
+                        <?= $_SESSION['mensaje']; ?>
+                    </div>
+                    <?php unset($_SESSION['mensaje']); ?>
                 <?php endif; ?>
 
                 <form action="guardar_auto.php" method="post" class="row g-3" autocomplete="off">
@@ -225,6 +225,7 @@ require 'includes/functions.php';
                                             <th>Tipo de Relación</th>
                                             <th>Firma</th>
                                             <th>Representado</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tabla-personas">
@@ -256,17 +257,17 @@ require 'includes/functions.php';
                                 <form action="" method="post" class="row g-3" autocomplete="off">
                                     <input type="hidden" name="id" value="<?= $id_autorizacion ?>">
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <label for="documento_persona" class="form-label">Tipo de documento:</label>
                                         <select class="form-select" name="documento_persona" id="documento_persona">
                                             <option value="">Seleccione</option>
                                             <?php foreach (getTpDoc() as $tpdoc) : ?>
-                                            <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
+                                                <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <label for="numdoc_persona" class="form-label">Nro. Documento:</label>
                                         <input class="form-control" type="text" id="numdoc_persona" name="numdoc_persona">
                                     </div>
@@ -294,6 +295,22 @@ require 'includes/functions.php';
                                         </select>
                                     </div>
 
+                                    <div class="col-md-3">
+                                        <label for="nacionalidad" class="form-label">Nacionalidad:</label>
+                                        <select name="nacionalidad" id="nacionalidad" class="form-select">
+                                            <option value="">Seleccione</option>
+                                            <?php foreach (getNacionalidad() as $nacionalidad) : ?>
+                                                <option value="<?= $nacionalidad->id_nacionalidad ?>">
+                                                    <?= $nacionalidad->desc_nacionalidad ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="fecha-nacimiento" class="form-label">Fecha de nacimiento:</label>
+                                        <input class="form-control" type="date" id="fecha-nacimiento" name="fecha-nacimiento">
+                                    </div>
+
                                     <div class="col-md-6">
                                         <label for="nombre-persona" class="form-label">Nombres:</label>
                                         <input class="form-control" type="text" id="nombre-persona" name="nombre-persona">
@@ -304,28 +321,17 @@ require 'includes/functions.php';
                                         <input class="form-control" type="text" id="apellido-persona" name="apellido-persona">
                                     </div>
 
-                                    <div class="col-md-12">
+                                    <div class="col-md-6" id="direccion-container">
                                         <label for="direccion-persona" class="form-label">Dirección:</label>
                                         <input class="form-control" type="text" id="direccion-persona" name="direccion-persona">
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" id="ubigeo-container">
                                         <label for="Ubigeo-persona" class="form-label">Ubigeo:</label>
                                         <select name="Ubigeo-persona" id="Ubigeo-persona" class="form-select">
                                             <option value="">Seleccione</option>
                                             <?php foreach (getUbigeo() as $ubigeo) : ?>
-                                            <option value="<?= $ubigeo->id_ubigeo ?>"><?= $ubigeo->nom_dis ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label for="nacionalidad" class="form-label">Nacionalidad:</label>
-                                        <select name="nacionalidad" id="nacionalidad" class="form-select">
-                                            <option value="">Seleccione</option>
-                                            <?php foreach (getNacionalidad() as $nacionalidad) : ?>
-                                            <option value="<?= $nacionalidad->id_nacionalidad ?>">
-                                                <?= $nacionalidad->desc_nacionalidad ?></option>
+                                                <option value="<?= $ubigeo->id_ubigeo ?>"><?= $ubigeo->nom_dis ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -345,12 +351,13 @@ require 'includes/functions.php';
                                                     <select name="representante-persona" id="representante-persona" class="form-select">
                                                         <option value="">Seleccione</option>
                                                         <?php
-                                                        $participantes = getParticipantes($id_autorizacion); // Pasamos el ID de autorización
+                                                        $participantes = getParticipantes($id_autorizacion); // Obtener participantes
                                                         foreach ($participantes as $participante) {
-                                                            echo '<option value="' . htmlspecialchars($participante->nombre_completo) . '">' . htmlspecialchars($participante->nombre_completo) . '</option>';
+                                                            echo '<option value="' . htmlspecialchars($participante->id_persona) . '">' . htmlspecialchars($participante->nombre_completo) . '</option>';
                                                         }
                                                         ?>
                                                     </select>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -360,7 +367,7 @@ require 'includes/functions.php';
                             <div class="modal-footer">
                                 <button class="btn btn-secondary" data-bs-target="#modal-ver-participantes"
                                     data-bs-toggle="modal">Cerrar</button>
-                                <button class="btn btn-primary">Añadir Participantes</button>
+                                <button type="button" class="btn btn-primary" onclick="enviarParticipante()">Añadir Participante</button>
                             </div>
                         </div>
                     </div>
@@ -375,49 +382,67 @@ require 'includes/functions.php';
     ?>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const enRepresentacion = document.getElementById("en_representacion");
-        const representantes = document.getElementById("representantes");
+        document.addEventListener("DOMContentLoaded", function() {
+            const enRepresentacion = document.getElementById("en_representacion");
+            const representantes = document.getElementById("representantes");
 
-        function toggleVisibility(checkbox, target) {
-            target.style.display = checkbox.checked ? "block" : "none";
-        }
+            function toggleVisibility(checkbox, target) {
+                target.style.display = checkbox.checked ? "block" : "none";
+            }
 
-        enRepresentacion.addEventListener("change", function() {
+            enRepresentacion.addEventListener("change", function() {
+                toggleVisibility(enRepresentacion, representantes);
+            });
+
+            // Verificar el estado inicial al cargar la página
             toggleVisibility(enRepresentacion, representantes);
         });
 
-        // Verificar el estado inicial al cargar la página
-        toggleVisibility(enRepresentacion, representantes);
-    });
+        document.addEventListener("DOMContentLoaded", function() {
+            const condicionSelect = document.getElementById("condicion");
+            const direccionContainer = document.getElementById("direccion-container");
+            const ubigeoContainer = document.getElementById("ubigeo-container");
 
-    document.getElementById("ver-participantes").addEventListener("click", function() {
-        let modal = document.getElementById("modal-ver-participantes");
-        modal.style.display = "block";
+            function toggleVisibility(select, target1, target2) {
+                const shouldHide = select.value === "1"; // Si el valor es "1" (Menor), ocultar
+                target1.style.display = shouldHide ? "none" : "block";
+                target2.style.display = shouldHide ? "none" : "block";
+            }
 
-        // Llamar a la función AJAX para cargar los datos
-        cargarPersonas();
-    });
+            condicionSelect.addEventListener("change", function() {
+                toggleVisibility(condicionSelect, direccionContainer, ubigeoContainer);
+            });
 
-    document.querySelector(".close").addEventListener("click", function() {
-        document.getElementById("modal-ver-participantes").style.display = "none";
-    });
+            // Aplicar la lógica al cargar la página por si hay un valor preseleccionado
+            toggleVisibility(condicionSelect, direccionContainer, ubigeoContainer);
+        });
 
-    function cargarPersonas() {
-        let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                let datos = JSON.parse(xhr.responseText);
-                let tabla = document.getElementById("tabla-personas");
-                tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
+        document.getElementById("ver-participantes").addEventListener("click", function() {
+            let modal = document.getElementById("modal-ver-participantes");
+            modal.style.display = "block";
 
-                if (datos.mensaje) {
-                    tabla.innerHTML = `<tr><td colspan="5">${datos.mensaje}</td></tr>`;
-                } else {
-                    datos.forEach(function(persona) {
-                        let fila = `<tr>
+            cargarPersonas();
+        });
+
+        document.querySelector(".close").addEventListener("click", function() {
+            document.getElementById("modal-ver-participantes").style.display = "none";
+        });
+
+        function cargarPersonas() {
+            let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let datos = JSON.parse(xhr.responseText);
+                    let tabla = document.getElementById("tabla-personas");
+                    tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
+
+                    if (datos.mensaje) {
+                        tabla.innerHTML = `<tr><td colspan="8" class="text-center">${datos.mensaje}</td></tr>`;
+                    } else {
+                        datos.forEach(function(persona) {
+                            let fila = `<tr id="fila-${persona.id_persona}">
                         <td>${persona.id_persona}</td>
                         <td>${persona.num_doc}</td>
                         <td>${persona.nombre_completo}</td>
@@ -425,14 +450,93 @@ require 'includes/functions.php';
                         <td>${persona.tipo_relacion}</td>
                         <td>${persona.firma}</td>
                         <td>${persona.en_representacion}</td>
+                        <td class="text-center">
+                            <button class="btn btn-danger btn-sm" onclick="eliminarPersona(${persona.id_persona}, ${id_autorizacion})">
+                                Eliminar
+                            </button>
+                        </td>
                     </tr>`;
-                        tabla.innerHTML += fila;
-                    });
+                            tabla.innerHTML += fila;
+                        });
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        document.getElementById("formulario").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evita que el formulario se envíe automáticamente
+
+            let fechaInput = document.getElementById("fecha-nacimiento");
+            let fechaValor = fechaInput.value; // Formato esperado: dd/mm/yyyy
+
+            if (fechaValor) {
+                let partes = fechaValor.split("/"); // Divide la fecha
+                if (partes.length === 3) {
+                    let fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`; // Convierte a yyyy-mm-dd
+                    fechaInput.value = fechaFormateada; // Reemplaza el valor en el input
                 }
             }
-        };
-        xhr.send();
-    }
+
+            this.submit(); // Envía el formulario con la fecha corregida
+        });
+
+        function enviarParticipante() {
+            let formData = new FormData();
+            formData.append("id_autorizacion", document.querySelector("input[name='id']").value);
+            formData.append("documento_persona", document.getElementById("documento_persona").value);
+            formData.append("numdoc_persona", document.getElementById("numdoc_persona").value);
+            formData.append("nombre_persona", document.getElementById("nombre-persona").value);
+            formData.append("apellido_persona", document.getElementById("apellido-persona").value);
+            formData.append("fecha_nacimiento", document.getElementById("fecha-nacimiento").value);
+            formData.append("nacionalidad", document.getElementById("nacionalidad").value);
+            formData.append("Ubigeo_persona", document.getElementById("Ubigeo-persona").value);
+            formData.append("direccion_persona", document.getElementById("direccion-persona").value);
+            formData.append("condicion", document.getElementById("condicion").value);
+            formData.append("firma", document.getElementById("firma").value);
+
+            let enRepresentacion = document.getElementById("en_representacion").checked;
+            formData.append("en_representacion", enRepresentacion ? "1" : "0");
+
+            if (enRepresentacion) {
+                formData.append("representante_persona", document.getElementById("representante-persona").value);
+            }
+
+            fetch("añadir_participante.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("Participante añadido correctamente");
+                        location.reload(); // Opcional: recargar la lista de participantes
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Error en la solicitud:", error));
+        }
+
+        function eliminarPersona(id_persona, id_autorizacion) {
+            if (confirm("¿Seguro que deseas eliminar esta persona de la autorización?")) {
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "eliminar_participante.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        let respuesta = JSON.parse(xhr.responseText);
+                        if (respuesta.success) {
+                            document.getElementById("fila-" + id_persona).remove();
+                        } else {
+                            alert("Error al eliminar: " + respuesta.mensaje);
+                        }
+                    }
+                };
+                xhr.send("id_persona=" + id_persona + "&id_autorizacion=" + id_autorizacion);
+            }
+        }
     </script>
 
 </body>
