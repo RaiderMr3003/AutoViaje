@@ -48,10 +48,10 @@ require 'includes/functions.php';
             </div>
             <div class="card-body">
                 <?php if (isset($_SESSION['mensaje'])) : ?>
-                    <div class="alert alert-success">
-                        <?= $_SESSION['mensaje']; ?>
-                    </div>
-                    <?php unset($_SESSION['mensaje']); ?>
+                <div class="alert alert-success">
+                    <?= $_SESSION['mensaje']; ?>
+                </div>
+                <?php unset($_SESSION['mensaje']); ?>
                 <?php endif; ?>
 
                 <form action="guardar_auto.php" method="post" class="row g-3" autocomplete="off">
@@ -261,7 +261,7 @@ require 'includes/functions.php';
                                         <select class="form-select" name="documento_persona" id="documento_persona">
                                             <option value="">Seleccione</option>
                                             <?php foreach (getTpDoc() as $tpdoc) : ?>
-                                                <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
+                                            <option value="<?= $tpdoc->id_tpdoc ?>"><?= $tpdoc->des_tpdoc ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -311,12 +311,23 @@ require 'includes/functions.php';
 
                                     <div class="col-md-6">
                                         <label for="Ubigeo-persona" class="form-label">Ubigeo:</label>
-                                        <input class="form-control" type="text" id="Ubigeo-persona" name="Ubigeo-persona">
+                                        <select name="Ubigeo-persona" id="Ubigeo-persona" class="form-select">
+                                            <option value="">Seleccione</option>
+                                            <?php foreach (getUbigeo() as $ubigeo) : ?>
+                                            <option value="<?= $ubigeo->id_ubigeo ?>"><?= $ubigeo->nom_dis ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-6">
                                         <label for="nacionalidad" class="form-label">Nacionalidad:</label>
-                                        <input class="form-control" type="text" id="nacionalidad" name="nacionalidad">
+                                        <select name="nacionalidad" id="nacionalidad" class="form-select">
+                                            <option value="">Seleccione</option>
+                                            <?php foreach (getNacionalidad() as $nacionalidad) : ?>
+                                            <option value="<?= $nacionalidad->id_nacionalidad ?>">
+                                                <?= $nacionalidad->desc_nacionalidad ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-6">
@@ -364,49 +375,49 @@ require 'includes/functions.php';
     ?>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const enRepresentacion = document.getElementById("en_representacion");
-            const representantes = document.getElementById("representantes");
+    document.addEventListener("DOMContentLoaded", function() {
+        const enRepresentacion = document.getElementById("en_representacion");
+        const representantes = document.getElementById("representantes");
 
-            function toggleVisibility(checkbox, target) {
-                target.style.display = checkbox.checked ? "block" : "none";
-            }
+        function toggleVisibility(checkbox, target) {
+            target.style.display = checkbox.checked ? "block" : "none";
+        }
 
-            enRepresentacion.addEventListener("change", function() {
-                toggleVisibility(enRepresentacion, representantes);
-            });
-
-            // Verificar el estado inicial al cargar la página
+        enRepresentacion.addEventListener("change", function() {
             toggleVisibility(enRepresentacion, representantes);
         });
-        
-        document.getElementById("ver-participantes").addEventListener("click", function() {
-            let modal = document.getElementById("modal-ver-participantes");
-            modal.style.display = "block";
 
-            // Llamar a la función AJAX para cargar los datos
-            cargarPersonas();
-        });
+        // Verificar el estado inicial al cargar la página
+        toggleVisibility(enRepresentacion, representantes);
+    });
 
-        document.querySelector(".close").addEventListener("click", function() {
-            document.getElementById("modal-ver-participantes").style.display = "none";
-        });
+    document.getElementById("ver-participantes").addEventListener("click", function() {
+        let modal = document.getElementById("modal-ver-participantes");
+        modal.style.display = "block";
 
-        function cargarPersonas() {
-            let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    let datos = JSON.parse(xhr.responseText);
-                    let tabla = document.getElementById("tabla-personas");
-                    tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
+        // Llamar a la función AJAX para cargar los datos
+        cargarPersonas();
+    });
 
-                    if (datos.mensaje) {
-                        tabla.innerHTML = `<tr><td colspan="5">${datos.mensaje}</td></tr>`;
-                    } else {
-                        datos.forEach(function(persona) {
-                            let fila = `<tr>
+    document.querySelector(".close").addEventListener("click", function() {
+        document.getElementById("modal-ver-participantes").style.display = "none";
+    });
+
+    function cargarPersonas() {
+        let id_autorizacion = <?= $id_autorizacion ?>; // Pasar la ID desde PHP
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", "get_person.php?id_autorizacion=" + id_autorizacion, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                let datos = JSON.parse(xhr.responseText);
+                let tabla = document.getElementById("tabla-personas");
+                tabla.innerHTML = ""; // Limpiar tabla antes de insertar nuevos datos
+
+                if (datos.mensaje) {
+                    tabla.innerHTML = `<tr><td colspan="5">${datos.mensaje}</td></tr>`;
+                } else {
+                    datos.forEach(function(persona) {
+                        let fila = `<tr>
                         <td>${persona.id_persona}</td>
                         <td>${persona.num_doc}</td>
                         <td>${persona.nombre_completo}</td>
@@ -415,13 +426,13 @@ require 'includes/functions.php';
                         <td>${persona.firma}</td>
                         <td>${persona.en_representacion}</td>
                     </tr>`;
-                            tabla.innerHTML += fila;
-                        });
-                    }
+                        tabla.innerHTML += fila;
+                    });
                 }
-            };
-            xhr.send();
-        }
+            }
+        };
+        xhr.send();
+    }
     </script>
 
 </body>

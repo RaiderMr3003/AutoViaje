@@ -54,6 +54,30 @@ function getFirma() {
     return ['SI', 'NO', 'HUELLA'];
 }
 
+function getUbigeo() {
+    global $pdo;
+    
+    try {
+    $query = "SELECT id_ubigeo, nom_dis FROM ubigeo ORDER BY nom_dis";
+    $stmt = $pdo->query($query);
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        die("Error en getUbigeo: " . $e->getMessage());
+    }
+}
+
+function getNacionalidad() {
+    global $pdo;
+
+    try {
+        $query = "SELECT id_nacionalidad, desc_nacionalidad FROM nacionalidades";
+        $stmt = $pdo->query($query);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        die("Error en getNacionalidad: " . $e->getMessage());
+    }
+}
+
 function getParticipantes($id_autorizacion) {
     global $pdo;
 
