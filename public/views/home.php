@@ -19,15 +19,25 @@ try {
             a.encargado, 
             tp.des_tppermi AS tipo_permiso, 
             a.fecha_ingreso, 
-            a.observaciones 
+            a.observaciones,
+            GROUP_CONCAT(
+                CONCAT(
+                    tr.descripcion, ': ', p.apellidos, ', ', p.nombres
+                ) SEPARATOR '\n'
+            ) AS participantes
         FROM autorizaciones a
         JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
-        order by a.id_autorizacion ASC
+        LEFT JOIN personas_autorizaciones pa ON a.id_autorizacion = pa.id_autorizacion
+        LEFT JOIN personas p ON pa.id_persona = p.id_persona
+        LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
+        GROUP BY a.id_autorizacion
+        ORDER BY a.id_autorizacion ASC
     ");
     $autorizaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Error al obtener autorizaciones: " . $e->getMessage());
 }
+
 
 ?>
 
@@ -107,8 +117,8 @@ try {
             <div class="col-md-9 mb-4">
                 <div class="card shadow">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover text-center table-bordered">
-                            <thead class="table-dark">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead class="table-dark text-center">
                                 <tr class="">
                                     <th>N° Crono.</th>
                                     <th>Encargado</th>
@@ -122,12 +132,12 @@ try {
                             <tbody>
                                 <?php foreach ($autorizaciones as $autorizacion) : ?>
                                     <tr style="text-transform: uppercase;">
-                                        <td><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
-                                        <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
-                                        <td><?= htmlspecialchars($autorizacion['encargado']) ?></td>
-                                        <td><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($autorizacion['encargado']) ?></td>
+                                        <td><?= nl2br(htmlspecialchars($autorizacion['participantes'])) ?></td>
+                                        <td class="text-center"><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
                                         <td><?= htmlspecialchars($autorizacion['fecha_ingreso']) ?></td>
-                                        <td><?= htmlspecialchars($autorizacion['observaciones'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars(mb_strimwidth($autorizacion['observaciones'] ?? 'N/A', 0, 10, '...')) ?></td>
                                         <td>
                                             <a href="edit_auto.php?id=<?= $autorizacion['id_autorizacion'] ?>"
                                                 class="btn btn-sm btn-warning"><svg

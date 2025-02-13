@@ -11,7 +11,7 @@
       <ul class="nav col-lg-auto mb-2 mb-lg-0">
         <li><a href="home.php" class="nav-link px-3 link-light">Inicio</a></li>
         <li><a href="create_auto.php" class="nav-link px-3 link-light">Crear</a></li>
-        <li><a href="#" class="nav-link px-3 link-light">Exportar</a></li>
+        <li><a href="exportar.php" class="nav-link px-3 link-light">Exportar</a></li>
       </ul>
 
       <!-- Usuario / Logout -->
