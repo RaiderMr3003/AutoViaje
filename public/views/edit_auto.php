@@ -199,14 +199,19 @@ require 'includes/functions.php';
                     </div>
                 </form>
 
-                <!-- Botón para abrir el modal -->
-                <button id="ver-participantes" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-ver-participantes">Ver participantes</button>
-
-                <!-- Botón para generar documento -->
-                <form action="generar_documento.php" method="POST">
-                <input type="hidden" name="id" value="<?= $id_autorizacion ?>">
-                <button type="submit" class="btn btn-success">Generar Documento</button>
-                </form>
+                <div class="row">
+                    <div class="col-md-2">
+                        <!-- Botón para abrir el modal -->
+                        <button id="ver-participantes" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-ver-participantes">Ver participantes</button>
+                    </div>
+                    <div class="col-md-2">
+                        <!-- Botón para generar documento -->
+                        <form action="generar_documento.php" method="POST">
+                            <input type="hidden" name="id" value="<?= $id_autorizacion ?>">
+                            <button type="submit" class="btn btn-success">Generar Documento</button>
+                        </form>
+                    </div>
+                </div>
 
 
                 <!-- Modal para ver participantes -->
