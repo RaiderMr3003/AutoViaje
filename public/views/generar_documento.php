@@ -43,7 +43,7 @@ if ($id_autorizacion) {
         $templateProcessor->setValue('observaciones', $autorizacion['observaciones']);
         $templateProcessor->setValue('fecha_inicio', $autorizacion['fecha_inicio']);
         $templateProcessor->setValue('fecha_fin', $autorizacion['fecha_fin']);
-        
+
 
         $queryTransporte = "SELECT des_tptrans FROM tp_transporte WHERE id_tptrans = ?";
         $stmtTransporte = $pdo->prepare($queryTransporte);
@@ -155,10 +155,12 @@ if ($id_autorizacion) {
         $templateProcessor->setValue('firmantes', $listaFirmantes);
 
 
-        // Guardar y descargar el documento
-        $outputFile = "Autorizacion_{$id_autorizacion}.docx";
-        $templateProcessor->saveAs($outputFile);
-
+        // Determinar el nombre del archivo de salida
+        if (!empty($autorizacion['nro_kardex'])) {
+            $outputFile = "Autorizacion_viaje_{$autorizacion['nro_kardex']}.docx";
+        } else {
+            $outputFile = "Autorizacion_ejemplo_{$id_autorizacion}.docx";
+        }
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename={$outputFile}");
         header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
