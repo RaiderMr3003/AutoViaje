@@ -312,8 +312,8 @@ require 'includes/functions.php';
                                     </div>
 
                                     <div class="col-md-3">
-                                        <label for="fecha-nacimiento" class="form-label">Fecha de nacimiento:</label>
-                                        <input class="form-control" type="date" id="fecha-nacimiento" name="fecha-nacimiento">
+                                        <label for="edad" class="form-label">Edad:</label>
+                                        <input class="form-control" type="number" id="edad" min="0" max="130" name="edad">
                                     </div>
 
                                     <div class="col-md-6">
@@ -451,7 +451,7 @@ require 'includes/functions.php';
                         <td>${persona.id_persona}</td>
                         <td>${persona.num_doc}</td>
                         <td>${persona.nombre_completo}</td>
-                        <td>${persona.fecha_nacimiento}</td>
+                        <td>${persona.edad}</td>
                         <td>${persona.tipo_relacion}</td>
                         <td>${persona.firma}</td>
                         <td>${persona.en_representacion}</td>
@@ -469,23 +469,6 @@ require 'includes/functions.php';
             xhr.send();
         }
 
-        document.getElementById("formulario").addEventListener("submit", function(event) {
-            event.preventDefault(); // Evita que el formulario se envíe automáticamente
-
-            let fechaInput = document.getElementById("fecha-nacimiento");
-            let fechaValor = fechaInput.value; // Formato esperado: dd/mm/yyyy
-
-            if (fechaValor) {
-                let partes = fechaValor.split("/"); // Divide la fecha
-                if (partes.length === 3) {
-                    let fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`; // Convierte a yyyy-mm-dd
-                    fechaInput.value = fechaFormateada; // Reemplaza el valor en el input
-                }
-            }
-
-            this.submit(); // Envía el formulario con la fecha corregida
-        });
-
         function enviarParticipante() {
             let formData = new FormData();
             formData.append("id_autorizacion", document.querySelector("input[name='id']").value);
@@ -493,7 +476,7 @@ require 'includes/functions.php';
             formData.append("numdoc_persona", document.getElementById("numdoc_persona").value);
             formData.append("nombre_persona", document.getElementById("nombre-persona").value);
             formData.append("apellido_persona", document.getElementById("apellido-persona").value);
-            formData.append("fecha_nacimiento", document.getElementById("fecha-nacimiento").value);
+            formData.append("edad", document.getElementById("edad").value);
             formData.append("nacionalidad", document.getElementById("nacionalidad").value);
             formData.append("Ubigeo_persona", document.getElementById("Ubigeo-persona").value);
             formData.append("direccion_persona", document.getElementById("direccion-persona").value);

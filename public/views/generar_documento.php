@@ -101,7 +101,7 @@ if ($id_autorizacion) {
                             td.abrev_tpdoc AS tipo_documento,
                             p.num_doc AS num_documento,
                             CONCAT(p.apellidos, ' ', p.nombres) AS nombre,
-                            TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURDATE()) AS edad
+                            p.edad AS edad
                         FROM personas_autorizaciones pa 
                         JOIN personas p ON pa.id_persona = p.id_persona 
                         JOIN tp_documento td ON p.id_tpdoc = td.id_tpdoc

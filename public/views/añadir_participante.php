@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $num_doc = $_POST['numdoc_persona'];
     $nombres = $_POST['nombre_persona'];
     $apellidos = $_POST['apellido_persona'];
-    $fecha_nacimiento = $_POST['fecha_nacimiento'];
+    $edad = $_POST['edad'];
     $id_nacionalidad = $_POST['nacionalidad'];
     $id_tp_relacion = $_POST['condicion'];
     $firma = $_POST['firma'];
@@ -32,12 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $persona = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($persona) {
+            // Si existe, actualizar solo los campos necesarios (por ejemplo, edad)
             $id_persona = $persona['id_persona'];
+
+            // Solo actualizar si los valores son diferentes
+            if ($persona['edad'] != $edad || $persona['id_nacionalidad'] != $id_nacionalidad || $persona['id_ubigeo'] != $id_ubigeo || $persona['direccion'] != $direccion) {
+                $stmt = $pdo->prepare("UPDATE personas SET edad = ?, id_nacionalidad = ?, id_ubigeo = ?, direccion = ? WHERE id_persona = ?");
+                $stmt->execute([$edad, $id_nacionalidad, $id_ubigeo, $direccion, $id_persona]);
+            }
         } else {
             // Insertar nueva persona
-            $stmt = $pdo->prepare("INSERT INTO personas (id_tpdoc, num_doc, apellidos, nombres, fecha_nacimiento, id_nacionalidad, id_ubigeo, direccion) 
+            $stmt = $pdo->prepare("INSERT INTO personas (id_tpdoc, num_doc, apellidos, nombres, edad, id_nacionalidad, id_ubigeo, direccion) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$id_tpdoc, $num_doc, $apellidos, $nombres, $fecha_nacimiento, $id_nacionalidad, $id_ubigeo, $direccion]);
+            $stmt->execute([$id_tpdoc, $num_doc, $apellidos, $nombres, $edad, $id_nacionalidad, $id_ubigeo, $direccion]);
             $id_persona = $pdo->lastInsertId();
         }
 
@@ -59,4 +66,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(["status" => "error", "message" => "Error: " . $e->getMessage()]);
     }
 }
-?>

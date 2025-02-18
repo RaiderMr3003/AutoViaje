@@ -14,7 +14,7 @@ try {
             p.id_persona, 
             p.num_doc, 
             CONCAT(p.apellidos, ', ', p.nombres) AS nombre_completo, 
-            p.fecha_nacimiento, 
+            p.edad, 
             tr.descripcion AS tipo_relacion, 
             pa.firma, 
             CASE 
