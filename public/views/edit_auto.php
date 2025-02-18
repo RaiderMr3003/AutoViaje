@@ -83,13 +83,13 @@ require 'includes/functions.php';
                             value="<?= $autorizacion['fecha_ingreso'] ?>" disabled>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-3">
                         <label for="viaja-a" class="form-label">Viaja a:</label>
                         <input type="text" class="form-control" id="viaja-a" name="viaja-a"
                             value="<?= htmlspecialchars($autorizacion['viaja_a']) ?>">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="documento_acompañante" class="form-label">Tipo de documento (Acompañante):</label>
                         <select class="form-select" name="documento_acompañante" id="documento_acompañante">
                             <option value="">Seleccione</option>
@@ -103,27 +103,27 @@ require 'includes/functions.php';
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="numdoc_acompañante" class="form-label">Nro. Documento:</label>
                         <input class="form-control" type="text" id="numdoc_acompañante" name="numdoc_acompañante"
                             value="<?= htmlspecialchars($autorizacion['num_doc_acomp']) ?>"
                             placeholder="Nro. Documento">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="nombre-acompañante" class="form-label">Nombres (Acompañante):</label>
                         <input class="form-control" type="text" id="nombre-acompañante" name="nombre-acompañante"
                             value="<?= htmlspecialchars($autorizacion['nombres_acomp']) ?>" placeholder="Nombres">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="apellido-acompañante" class="form-label">Apellidos (Acompañante):</label>
                         <input class="form-control" type="text" id="apellido-acompañante" name="apellido-acompañante"
                             value="<?= htmlspecialchars($autorizacion['apellidos_acomp']) ?>" placeholder="Apellidos">
                     </div>
 
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="documento_responsable" class="form-label">Tipo de documento (Responsable):</label>
                         <select class="form-select" name="documento_responsable" id="documento_responsable">
                             <option value="">Seleccione</option>
@@ -137,19 +137,19 @@ require 'includes/functions.php';
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="numdoc_responsable" class="form-label">Nro. Documento:</label>
                         <input class="form-control" type="text" id="numdoc_responsable" name="numdoc_responsable"
                             value="<?= htmlspecialchars($autorizacion['num_doc_resp']) ?>" placeholder="Nro. Documento">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="nombre-responsable" class="form-label">Nombres (Responsable):</label>
                         <input class="form-control" type="text" id="nombre-responsable" name="nombre-responsable"
                             value="<?= htmlspecialchars($autorizacion['nombres_resp']) ?>" placeholder="Nombres">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" hidden>
                         <label for="apellido-responsable" class="form-label">Apellidos (Responsable):</label>
                         <input class="form-control" type="text" id="apellido-responsable" name="apellido-responsable"
                             value="<?= htmlspecialchars($autorizacion['apellidos_resp']) ?>" placeholder="Apellidos">
@@ -177,15 +177,9 @@ require 'includes/functions.php';
 
                     <!-- Fechas -->
                     <div class="col-md-3">
-                        <label for="desde" class="form-label">Desde:</label>
-                        <input type="date" id="desde" class="form-control" name="desde"
-                            value="<?= $autorizacion['fecha_inicio'] ?>">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label for="hasta" class="form-label">Hasta:</label>
-                        <input type="date" id="hasta" class="form-control" name="hasta"
-                            value="<?= $autorizacion['fecha_fin'] ?>">
+                    <label for="tiempo-de-viaje" class="form-label">Tiempo de viaje:</label>                        
+                    <input type="text" id="tiempo-de-viaje" class="form-control" name="tiempo-de-viaje"
+                            value="<?= $autorizacion['tiempo_viaje'] ?>">
                     </div>
 
                     <div class="col-12">

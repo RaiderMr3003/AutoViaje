@@ -41,8 +41,7 @@ if ($id_autorizacion) {
         $templateProcessor->setValue('fecha_ingreso', $autorizacion['fecha_ingreso']);
         $templateProcessor->setValue('viaja_a', $autorizacion['viaja_a']);
         $templateProcessor->setValue('observaciones', $autorizacion['observaciones']);
-        $templateProcessor->setValue('fecha_inicio', $autorizacion['fecha_inicio']);
-        $templateProcessor->setValue('fecha_fin', $autorizacion['fecha_fin']);
+        $templateProcessor->setValue('tiempo_viaje', $autorizacion['tiempo_viaje']);
 
 
         $queryTransporte = "SELECT des_tptrans FROM tp_transporte WHERE id_tptrans = ?";
@@ -161,6 +160,9 @@ if ($id_autorizacion) {
         } else {
             $outputFile = "Autorizacion_ejemplo_{$id_autorizacion}.docx";
         }
+
+        $templateProcessor->saveAs($outputFile);
+        
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename={$outputFile}");
         header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");

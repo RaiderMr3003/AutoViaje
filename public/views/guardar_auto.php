@@ -30,8 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Datos de transporte
         $id_tptrans = $_POST['tipo_transporte'];
         $agencia_transporte = $_POST['agencia-de-transporte'];
-        $fecha_inicio = $_POST['desde'];
-        $fecha_fin = $_POST['hasta'];
+        $tiempoViaje = $_POST['tiempo-de-viaje'];
         $observaciones = $_POST['observaciones'];
 
         if ($id_autorizacion) {
@@ -51,8 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 apellidos_resp = :apellidos_resp, 
                 id_tptrans = :id_tptrans, 
                 agencia_transporte = :agencia_transporte, 
-                fecha_inicio = :fecha_inicio, 
-                fecha_fin = :fecha_fin, 
+                tiempo_viaje = :tiempo_viaje,
                 observaciones = :observaciones
                 WHERE id_autorizacion = :id_autorizacion";
 
@@ -73,8 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':apellidos_resp' => $apellidos_resp,
                 ':id_tptrans' => $id_tptrans,
                 ':agencia_transporte' => $agencia_transporte,
-                ':fecha_inicio' => $fecha_inicio,
-                ':fecha_fin' => $fecha_fin,
+                ':tiempo_viaje' => $tiempoViaje,
                 ':observaciones' => $observaciones
             ]);
 
@@ -85,12 +82,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 (nro_kardex, encargado, id_tppermi, fecha_ingreso, viaja_a, 
                 id_tpdoc_acomp, num_doc_acomp, nombres_acomp, apellidos_acomp, 
                 id_tpdoc_resp, num_doc_resp, nombres_resp, apellidos_resp, 
-                id_tptrans, agencia_transporte, fecha_inicio, fecha_fin, observaciones)
+                id_tptrans, agencia_transporte, tiempo_viaje, observaciones)
                 VALUES 
                 (:nro_kardex, :encargado, :id_tppermi, :fecha_ingreso, :viaja_a, 
                 :id_tpdoc_acomp, :num_doc_acomp, :nombres_acomp, :apellidos_acomp, 
                 :id_tpdoc_resp, :num_doc_resp, :nombres_resp, :apellidos_resp, 
-                :id_tptrans, :agencia_transporte, :fecha_inicio, :fecha_fin, :observaciones)";
+                :id_tptrans, :agencia_transporte, :tiempo_viaje, :observaciones)";
 
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -109,8 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':apellidos_resp' => $apellidos_resp,
                 ':id_tptrans' => $id_tptrans,
                 ':agencia_transporte' => $agencia_transporte,
-                ':fecha_inicio' => $fecha_inicio,
-                ':fecha_fin' => $fecha_fin,
+                ':tiempo_viaje' => $tiempoViaje,
                 ':observaciones' => $observaciones
             ]);
 
