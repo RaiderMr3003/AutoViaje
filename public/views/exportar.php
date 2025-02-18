@@ -8,21 +8,21 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 
-    require '../../vendor/autoload.php'; // Cargar PhpSpreadsheet
+require '../../vendor/autoload.php'; // Cargar PhpSpreadsheet
 
-    use PhpOffice\PhpSpreadsheet\Spreadsheet;
-    use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-    if (isset($_GET['exportar'])) {
-        $where = "";
-        $fechaMin = $_GET['fecha_min'] ?? date('Y-m-d');
-        $fechaMax = $_GET['fecha_max'] ?? date('Y-m-d');
-    
-        if (!empty($_GET['fecha_min']) && !empty($_GET['fecha_max'])) {
-            $where = " WHERE a.fecha_ingreso BETWEEN :fecha_min AND :fecha_max ";
-        }
-    
-        $query = "
+if (isset($_GET['exportar'])) {
+    $where = "";
+    $fechaMin = $_GET['fecha_min'] ?? date('Y-m-d');
+    $fechaMax = $_GET['fecha_max'] ?? date('Y-m-d');
+
+    if (!empty($_GET['fecha_min']) && !empty($_GET['fecha_max'])) {
+        $where = " WHERE a.fecha_ingreso BETWEEN :fecha_min AND :fecha_max ";
+    }
+
+    $query = "
             SELECT 
                 a.id_autorizacion AS `N° Crono.`,
                 a.nro_kardex,
@@ -37,72 +37,77 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             LEFT JOIN personas p ON pa.id_persona = p.id_persona
             LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
             $where
-            ORDER BY a.id_autorizacion ASC";
-    
-        $stmt = $pdo->prepare($query);
-        if (!empty($_GET['fecha_min']) && !empty($_GET['fecha_max'])) {
-            $stmt->bindParam(':fecha_min', $_GET['fecha_min']);
-            $stmt->bindParam(':fecha_max', $_GET['fecha_max']);
-        }
-        $stmt->execute();
-        $autorizaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-        // Crear el archivo Excel
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-    
-        // Establecer encabezados
-        $columnas = array_keys($autorizaciones[0]);
+            ORDER BY 
+            CAST(a.nro_kardex AS UNSIGNED) ASC,  -- Parte numérica
+            a.nro_kardex REGEXP '[A-Za-z]' DESC,  -- Prioriza valores alfanuméricos
+            a.nro_kardex ASC  -- Orden alfabético en caso de empate";
+
+    $stmt = $pdo->prepare($query);
+    if (!empty($_GET['fecha_min']) && !empty($_GET['fecha_max'])) {
+        $stmt->bindParam(':fecha_min', $_GET['fecha_min']);
+        $stmt->bindParam(':fecha_max', $_GET['fecha_max']);
+    }
+    $stmt->execute();
+    $autorizaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Crear el archivo Excel
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Establecer encabezados
+    $columnas = array_keys($autorizaciones[0]);
+    $col = 'A';
+    foreach ($columnas as $columna) {
+        $sheet->setCellValue($col . '1', $columna);
+        $col++;
+    }
+
+    // Agregar datos a las filas
+    $fila = 2;
+    foreach ($autorizaciones as $autorizacion) {
         $col = 'A';
-        foreach ($columnas as $columna) {
-            $sheet->setCellValue($col . '1', $columna);
+        foreach ($autorizacion as $valor) {
+            $sheet->setCellValue($col . $fila, $valor);
             $col++;
         }
-    
-        // Agregar datos a las filas
-        $fila = 2;
-        foreach ($autorizaciones as $autorizacion) {
-            $col = 'A';
-            foreach ($autorizacion as $valor) {
-                $sheet->setCellValue($col . $fila, $valor);
-                $col++;
-            }
-            $fila++;
-        }
-    
-        // Nombre del archivo con fecha
-        $nombreArchivo = "autorizaciones_{$fechaMin}_a_{$fechaMax}.xlsx";
-    
-        // Descargar el archivo
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header("Content-Disposition: attachment;filename=\"$nombreArchivo\"");
-        header('Cache-Control: max-age=0');
-    
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
+        $fila++;
     }
+
+    // Nombre del archivo con fecha
+    $nombreArchivo = "autorizaciones_{$fechaMin}_a_{$fechaMax}.xlsx";
+
+    // Descargar el archivo
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header("Content-Disposition: attachment;filename=\"$nombreArchivo\"");
+    header('Cache-Control: max-age=0');
+
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
+    exit;
+}
 
 try {
     $stmt = $pdo->query("
         SELECT 
-            a.id_autorizacion, 
-            a.nro_kardex, 
-            a.encargado, 
-            tp.des_tppermi AS tipo_permiso, 
-            a.fecha_ingreso, 
-            a.observaciones,
-            GROUP_CONCAT(
-                CONCAT(tr.descripcion, ': ', p.apellidos, ', ', p.nombres) SEPARATOR '\n'
-            ) AS participantes
-        FROM autorizaciones a
-        JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
-        LEFT JOIN personas_autorizaciones pa ON a.id_autorizacion = pa.id_autorizacion
-        LEFT JOIN personas p ON pa.id_persona = p.id_persona
-        LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
-        GROUP BY a.id_autorizacion
-        ORDER BY a.id_autorizacion ASC
-    ");
+        a.id_autorizacion, 
+        a.nro_kardex, 
+        a.encargado, 
+        tp.des_tppermi AS tipo_permiso, 
+        a.fecha_ingreso, 
+        a.observaciones,
+        GROUP_CONCAT(
+            CONCAT(tr.descripcion, ': ', p.apellidos, ', ', p.nombres) SEPARATOR '\n'
+        ) AS participantes
+    FROM autorizaciones a
+    JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
+    LEFT JOIN personas_autorizaciones pa ON a.id_autorizacion = pa.id_autorizacion
+    LEFT JOIN personas p ON pa.id_persona = p.id_persona
+    LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
+    GROUP BY a.id_autorizacion
+    ORDER BY 
+        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(a.nro_kardex, '-', 1), ',', 1) AS UNSIGNED) ASC,  -- Parte numérica
+        a.nro_kardex ASC  -- Parte alfabética
+");
     $autorizaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Error al obtener autorizaciones: " . htmlspecialchars($e->getMessage()));
