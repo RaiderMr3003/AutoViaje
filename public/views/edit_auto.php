@@ -83,10 +83,17 @@ require 'includes/functions.php';
                             value="<?= $autorizacion['fecha_ingreso'] ?>" disabled>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label for="viaja-a" class="form-label">Viaja a:</label>
                         <input type="text" class="form-control" id="viaja-a" name="viaja-a"
                             value="<?= htmlspecialchars($autorizacion['viaja_a']) ?>">
+                    </div>
+
+                    <!-- Fechas -->
+                    <div class="col-md-6">
+                    <label for="tiempo-de-viaje" class="form-label">Tiempo de viaje:</label>                        
+                    <input type="text" id="tiempo-de-viaje" class="form-control" name="tiempo-de-viaje"
+                            value="<?= $autorizacion['tiempo_viaje'] ?>">
                     </div>
 
                     <div class="col-md-3" hidden>
@@ -155,7 +162,7 @@ require 'includes/functions.php';
                             value="<?= htmlspecialchars($autorizacion['apellidos_resp']) ?>" placeholder="Apellidos">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label for="tipo_transporte" class="form-label">Medio de transporte:</label>
                         <select class="form-select" name="tipo_transporte" id="tipo_transporte">
                             <option value="">Seleccione</option>
@@ -169,17 +176,10 @@ require 'includes/functions.php';
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label for="agencia-de-transporte" class="form-label">Agencia de transporte:</label>
                         <input class="form-control" type="text" id="agencia-de-transporte" name="agencia-de-transporte"
                             value="<?= htmlspecialchars($autorizacion['agencia_transporte']) ?>">
-                    </div>
-
-                    <!-- Fechas -->
-                    <div class="col-md-3">
-                    <label for="tiempo-de-viaje" class="form-label">Tiempo de viaje:</label>                        
-                    <input type="text" id="tiempo-de-viaje" class="form-control" name="tiempo-de-viaje"
-                            value="<?= $autorizacion['tiempo_viaje'] ?>">
                     </div>
 
                     <div class="col-12">
@@ -226,7 +226,6 @@ require 'includes/functions.php';
                                             <th>ID</th>
                                             <th>Num. Doc.</th>
                                             <th>Apellidos y Nombres</th>
-                                            <th>F. Nacimiento</th>
                                             <th>Tipo de Relación</th>
                                             <th>Firma</th>
                                             <th>Representado</th>
@@ -451,7 +450,6 @@ require 'includes/functions.php';
                         <td>${persona.id_persona}</td>
                         <td>${persona.num_doc}</td>
                         <td>${persona.nombre_completo}</td>
-                        <td>${persona.edad}</td>
                         <td>${persona.tipo_relacion}</td>
                         <td>${persona.firma}</td>
                         <td>${persona.en_representacion}</td>

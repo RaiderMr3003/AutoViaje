@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $num_doc = $_POST['numdoc_persona'];
     $nombres = $_POST['nombre_persona'];
     $apellidos = $_POST['apellido_persona'];
-    $edad = $_POST['edad'];
+    $edad = !empty($_POST['edad']) ? $_POST['edad'] : null;
     $id_nacionalidad = $_POST['nacionalidad'];
     $id_tp_relacion = $_POST['condicion'];
     $firma = $_POST['firma'];
@@ -34,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($persona) {
             // Si existe, actualizar solo los campos necesarios (por ejemplo, edad)
             $id_persona = $persona['id_persona'];
-
-            // Solo actualizar si los valores son diferentes
+        
+            // Solo actualizar los campos si los valores son diferentes
             if ($persona['edad'] != $edad || $persona['id_nacionalidad'] != $id_nacionalidad || $persona['id_ubigeo'] != $id_ubigeo || $persona['direccion'] != $direccion) {
                 $stmt = $pdo->prepare("UPDATE personas SET edad = ?, id_nacionalidad = ?, id_ubigeo = ?, direccion = ? WHERE id_persona = ?");
                 $stmt->execute([$edad, $id_nacionalidad, $id_ubigeo, $direccion, $id_persona]);
