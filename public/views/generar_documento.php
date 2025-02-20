@@ -1,7 +1,9 @@
 <?php
 require '../../vendor/autoload.php';
 
+
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Element\TextRun;
 
 $id_autorizacion = $_POST['id'] ?? null;
 
@@ -35,13 +37,13 @@ if ($id_autorizacion) {
         $templateProcessor = new TemplateProcessor($plantilla);
 
         // Reemplazo de datos generales
-        $templateProcessor->setValue('kardex', $autorizacion['nro_kardex']);
-        $templateProcessor->setValue('encargado', $autorizacion['encargado']);
-        $templateProcessor->setValue('tipo_permiso', $nombrePermiso);
-        $templateProcessor->setValue('fecha_ingreso', $autorizacion['fecha_ingreso']);
-        $templateProcessor->setValue('viaja_a', $autorizacion['viaja_a']);
-        $templateProcessor->setValue('observaciones', $autorizacion['observaciones']);
-        $templateProcessor->setValue('tiempo_viaje', $autorizacion['tiempo_viaje']);
+        $templateProcessor->setValue('kardex', strtoupper($autorizacion['nro_kardex']));
+        $templateProcessor->setValue('encargado', strtoupper($autorizacion['encargado']));
+        $templateProcessor->setValue('tipo_permiso', strtoupper($nombrePermiso));
+        $templateProcessor->setValue('fecha_ingreso', fechaEnLetras($autorizacion['fecha_ingreso']));
+        $templateProcessor->setValue('viaja_a', strtoupper($autorizacion['viaja_a']));
+        $templateProcessor->setValue('observaciones', strtoupper($autorizacion['observaciones']));
+        $templateProcessor->setValue('tiempo_viaje', strtoupper($autorizacion['tiempo_viaje']));
 
 
         $queryTransporte = "SELECT des_tptrans FROM tp_transporte WHERE id_tptrans = ?";
@@ -78,29 +80,43 @@ if ($id_autorizacion) {
         $padres = $stmtPadres->fetchAll(PDO::FETCH_ASSOC);
 
 
-        // Construcción del texto de los padres
-        $textoPadreMadre = "";
+        $textoPadreMadre = new TextRun();
+
         foreach ($padres as $padreMadre) {
             $descripcion = ($padreMadre['id_tp_relacion'] == 1) ? "MADRE" : "PADRE";
-            if (!empty($textoPadreMadre)) {
-                $textoPadreMadre .= " Y ";
+
+            if ($textoPadreMadre->countElements() > 0) {
+                $textoPadreMadre->addText(" Y ");
             }
-            $textoPadreMadre .= "{$padreMadre['nombre']}, CON {$padreMadre['tipo_documento']} N° {$padreMadre['num_documento']}, DE NACIONALIDAD {$padreMadre['nacionalidad']}, DOMICILIADO(A) EN {$padreMadre['direccion']}, DISTRITO DE {$padreMadre['distrito']}, PROVINCIA DE {$padreMadre['provincia']}, DEPARTAMENTO DE {$padreMadre['departamento']}";
+
+            // Añadir el nombre en negrita
+            $textoPadreMadre->addText(strtoupper($padreMadre['nombre']), ['bold' => true]);
+            $textoPadreMadre->addText(", CON ");
+
+            // Añadir el tipo de documento en negrita
+            $textoPadreMadre->addText($padreMadre['tipo_documento'], ['bold' => true]);
+            $textoPadreMadre->addText(" N° ", ['bold' => true]);
+
+            // Añadir el número de documento en negrita
+            $textoPadreMadre->addText($padreMadre['num_documento'], ['bold' => true]);
+
+            // Resto del texto normal
+            $textoPadreMadre->addText(", DE NACIONALIDAD {$padreMadre['nacionalidad']}, DOMICILIADO(A) EN {$padreMadre['direccion']}, DISTRITO DE {$padreMadre['distrito']}, PROVINCIA DE {$padreMadre['provincia']}, DEPARTAMENTO DE {$padreMadre['departamento']}");
         }
 
         // Si no hay padres registrados
-        if (empty($textoPadreMadre)) {
-            $textoPadreMadre = "No se han registrado padres o tutores.";
+        if ($textoPadreMadre->countElements() === 0) {
+            $textoPadreMadre->addText("No se han registrado padres o tutores.");
         }
 
         // Reemplazo en la plantilla
-        $templateProcessor->setValue('padres_info', $textoPadreMadre);
+        $templateProcessor->setComplexValue('padres_info', $textoPadreMadre);
 
         // Obtener datos de los menores
         $queryMenores = "SELECT 
                             td.abrev_tpdoc AS tipo_documento,
                             p.num_doc AS num_documento,
-                            CONCAT(p.apellidos, ' ', p.nombres) AS nombre,
+                            CONCAT(p.nombres, ' ', p.apellidos) AS nombre,
                             p.edad AS edad
                         FROM personas_autorizaciones pa 
                         JOIN personas p ON pa.id_persona = p.id_persona 
@@ -112,18 +128,32 @@ if ($id_autorizacion) {
         $menores = $stmtMenores->fetchAll(PDO::FETCH_ASSOC);
 
         // Construcción de la lista de menores
-        $listaMenores = "";
-        foreach ($menores as $menor) {
-            $listaMenores .= "{$menor['nombre']}, IDENTIFICADO(A) CON {$menor['tipo_documento']}: {$menor['num_documento']}============== \nDE: {$menor['edad']} AÑOS DE EDAD.============================================================\n";
-        }
+        $listaMenores = new TextRun();
 
-        // Si no hay menores registrados
-        if (empty($listaMenores)) {
-            $listaMenores = "No hay menores registrados.";
+        foreach ($menores as $menor) {
+            if ($listaMenores->countElements() > 0) {
+                $listaMenores->addText(" Y ");
+            }
+
+            // Añadir el nombre del menor en negrita
+            $listaMenores->addText(strtoupper($menor['nombre']), ['bold' => true]);
+            $listaMenores->addText(", IDENTIFICADO(A) CON "); // Texto normal
+
+            // Añadir el tipo de documento en negrita
+            $listaMenores->addText($menor['tipo_documento'], ['bold' => true]);
+            $listaMenores->addText(" N° ", ['bold' => true]);
+
+            // Añadir el número de documento en negrita
+            $listaMenores->addText($menor['num_documento'], ['bold' => true]);
+            $listaMenores->addTextBreak(); // Salto de línea
+
+            // Resto del texto normal
+            $listaMenores->addText("DE: {$menor['edad']} AÑOS DE EDAD.", ['bold' => true] );
         }
 
         // Reemplazo en la plantilla
-        $templateProcessor->setValue('lista_menores', $listaMenores);
+        $templateProcessor->setComplexValue('lista_menores', $listaMenores);
+
 
 
         // Obtener los firmantes
@@ -142,7 +172,7 @@ if ($id_autorizacion) {
         // Construcción de la lista de firmantes
         $listaFirmantes = "";
         foreach ($firmantes as $firmante) {
-            $listaFirmantes .= "{$firmante['nombre_completo']} ({$firmante['firma']})           ";
+            $listaFirmantes .= "{$firmante['nombre_completo']}\n \n"; // Salto de línea
         }
 
         // Si no hay firmantes registrados
@@ -151,6 +181,7 @@ if ($id_autorizacion) {
         }
 
         // Reemplazo en la plantilla
+        $templateProcessor->setValue('firmantes', strtoupper($listaFirmantes));
         $templateProcessor->setValue('firmantes', $listaFirmantes);
 
 
@@ -162,7 +193,7 @@ if ($id_autorizacion) {
         }
 
         $templateProcessor->saveAs($outputFile);
-        
+
         header("Content-Description: File Transfer");
         header("Content-Disposition: attachment; filename={$outputFile}");
         header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
@@ -174,4 +205,92 @@ if ($id_autorizacion) {
     }
 } else {
     echo "ID no válida.";
+}
+
+function fechaEnLetras($fecha)
+{
+    $dias = [
+        1 => 'PRIMERO',
+        2 => 'DOS',
+        3 => 'TRES',
+        4 => 'CUATRO',
+        5 => 'CINCO',
+        6 => 'SEIS',
+        7 => 'SIETE',
+        8 => 'OCHO',
+        9 => 'NUEVE',
+        10 => 'DIEZ',
+        11 => 'ONCE',
+        12 => 'DOCE',
+        13 => 'TRECE',
+        14 => 'CATORCE',
+        15 => 'QUINCE',
+        16 => 'DIECISÉIS',
+        17 => 'DIECISIETE',
+        18 => 'DIECIOCHO',
+        19 => 'DIECINUEVE',
+        20 => 'VEINTE',
+        21 => 'VEINTIUNO',
+        22 => 'VEINTIDÓS',
+        23 => 'VEINTITRÉS',
+        24 => 'VEINTICUATRO',
+        25 => 'VEINTICINCO',
+        26 => 'VEINTISÉIS',
+        27 => 'VEINTISIETE',
+        28 => 'VEINTIOCHO',
+        29 => 'VEINTINUEVE',
+        30 => 'TREINTA',
+        31 => 'TREINTA Y UNO'
+    ];
+
+    $meses = [
+        1 => 'ENERO',
+        2 => 'FEBRERO',
+        3 => 'MARZO',
+        4 => 'ABRIL',
+        5 => 'MAYO',
+        6 => 'JUNIO',
+        7 => 'JULIO',
+        8 => 'AGOSTO',
+        9 => 'SEPTIEMBRE',
+        10 => 'OCTUBRE',
+        11 => 'NOVIEMBRE',
+        12 => 'DICIEMBRE'
+    ];
+
+    $anios = [
+        '2023' => 'DOS MIL VEINTITRÉS',
+        '2024' => 'DOS MIL VEINTICUATRO',
+        '2025' => 'DOS MIL VEINTICINCO',
+        '2026' => 'DOS MIL VEINTISÉIS',
+        '2027' => 'DOS MIL VEINTISIETE',
+        '2028' => 'DOS MIL VEINTIOCHO',
+        '2029' => 'DOS MIL VEINTINUEVE',
+        '2030' => 'DOS MIL TREINTA',
+        '2031' => 'DOS MIL TREINTA Y UNO'
+    ];
+
+    $fechaPartes = explode('-', $fecha);
+    if (count($fechaPartes) == 3) {
+        $anio = $fechaPartes[0];
+        $mes = (int)$fechaPartes[1];
+        $dia = (int)$fechaPartes[2];
+
+        // Verificar si el año está en el array, si no, convertirlo
+        $anioEnLetras = isset($anios[$anio]) ? $anios[$anio] : convertirAnioEnLetras($anio);
+
+        return "{$dias[$dia]} DE {$meses[$mes]} DE {$anioEnLetras}";
+    }
+    return $fecha;
+}
+
+// Función para convertir cualquier año a letras (opcional si quieres cubrir años futuros)
+function convertirAnioEnLetras($anio)
+{
+    $unidades = ['CERO', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+    $miles = (int)($anio / 1000);
+    $centenas = $anio % 1000;
+
+    $anioLetras = ($miles > 0 ? $unidades[$miles] . ' MIL ' : '') . ($centenas > 0 ? $centenas : '');
+    return strtoupper(trim($anioLetras));
 }
