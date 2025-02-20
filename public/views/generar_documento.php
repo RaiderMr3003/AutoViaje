@@ -127,6 +127,20 @@ if ($id_autorizacion) {
         $stmtMenores->execute([$id_autorizacion]);
         $menores = $stmtMenores->fetchAll(PDO::FETCH_ASSOC);
 
+        $menorhijo = "";
+
+        // Verificar la cantidad de menores
+        if (count($menores) > 1) {
+            $menorhijo = "MIS MENORES HIJOS()";
+        } elseif (count($menores) === 1) {
+            $menorhijo = "MI MENOR HIJO(A)";
+        } else {
+            $menorhijo = "No se han registrado menores.";
+        }
+
+        // Reemplazo en la plantilla para $menorhijo
+        $templateProcessor->setValue('menorhijo', $menorhijo);
+
         // Construcción de la lista de menores
         $listaMenores = new TextRun();
 
@@ -148,7 +162,8 @@ if ($id_autorizacion) {
             $listaMenores->addTextBreak(); // Salto de línea
 
             // Resto del texto normal
-            $listaMenores->addText("DE: {$menor['edad']} AÑOS DE EDAD.", ['bold' => true] );
+            $listaMenores->addText("DE: "); // Texto normal
+            $listaMenores->addText("{$menor['edad']} AÑOS DE EDAD.", ['bold' => true]);
         }
 
         // Reemplazo en la plantilla
@@ -158,7 +173,7 @@ if ($id_autorizacion) {
 
         // Obtener los firmantes
         $queryFirmantes = "SELECT 
-                                CONCAT(p.apellidos, ' ', p.nombres) AS nombre_completo,
+                                CONCAT(p.nombres, ' ', p.apellidos) AS nombre_completo,
                                 pa.firma
                             FROM personas_autorizaciones pa
                             JOIN personas p ON pa.id_persona = p.id_persona
@@ -259,6 +274,9 @@ function fechaEnLetras($fecha)
     ];
 
     $anios = [
+        '2020' => 'DOS MIL VEINTE',
+        '2021' => 'DOS MIL VEINTIUNO',
+        '2022' => 'DOS MIL VEINTIDOS',
         '2023' => 'DOS MIL VEINTITRÉS',
         '2024' => 'DOS MIL VEINTICUATRO',
         '2025' => 'DOS MIL VEINTICINCO',
@@ -267,7 +285,16 @@ function fechaEnLetras($fecha)
         '2028' => 'DOS MIL VEINTIOCHO',
         '2029' => 'DOS MIL VEINTINUEVE',
         '2030' => 'DOS MIL TREINTA',
-        '2031' => 'DOS MIL TREINTA Y UNO'
+        '2031' => 'DOS MIL TREINTA Y UNO',
+        '2032' => 'DOS MIL TREINTA Y DOS',
+        '2033' => 'DOS MIL TREINTA Y TRES',
+        '2034' => 'DOS MIL TREINTA Y CUATRO',
+        '2035' => 'DOS MIL TREINTA Y CINCO',
+        '2036' => 'DOS MIL TREINTA Y SEIS',
+        '2037' => 'DOS MIL TREINTA Y SIETE',
+        '2038' => 'DOS MIL TREINTA Y OCHO',
+        '2039' => 'DOS MIL TREINTA Y NUEVE',
+        '2040' => 'DOS MIL CUARENTA'
     ];
 
     $fechaPartes = explode('-', $fecha);

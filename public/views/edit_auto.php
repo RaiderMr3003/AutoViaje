@@ -184,7 +184,7 @@ require 'includes/functions.php';
 
                     <div class="col-12">
                         <label for="observaciones" class="form-label">Observaciones:</label>
-                        <textarea class="form-control" name="observaciones"
+                        <textarea class="form-control" name="observaciones" style="resize: none; field-sizing: content;"
                             id="observaciones"><?= htmlspecialchars($autorizacion['observaciones']) ?></textarea>
                     </div>
 
