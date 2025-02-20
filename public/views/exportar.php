@@ -23,24 +23,22 @@ if (isset($_GET['exportar'])) {
     }
 
     $query = "
-            SELECT 
-                a.id_autorizacion AS `N° Crono.`,
-                a.nro_kardex,
-                a.encargado,
-                CONCAT(tr.descripcion, ': ', p.apellidos, ', ', p.nombres) AS participante,
-                tp.des_tppermi AS `Tipo de Permiso`,
-                a.fecha_ingreso AS `F. Ingreso`,
-                a.observaciones
-            FROM autorizaciones a
-            JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
-            LEFT JOIN personas_autorizaciones pa ON a.id_autorizacion = pa.id_autorizacion
-            LEFT JOIN personas p ON pa.id_persona = p.id_persona
-            LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
-            $where
-            ORDER BY 
-            CAST(a.nro_kardex AS UNSIGNED) ASC,  -- Parte numérica
-            a.nro_kardex REGEXP '[A-Za-z]' DESC,  -- Prioriza valores alfanuméricos
-            a.nro_kardex ASC  -- Orden alfabético en caso de empate";
+        SELECT 
+            a.nro_kardex, 
+            tp.des_tppermi AS tipo_permiso, 
+            a.fecha_ingreso, 
+            a.viaja_a, 
+            CONCAT(tr.descripcion, ': ', p.apellidos, ', ', p.nombres) AS participante
+        FROM autorizaciones a
+        JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
+        LEFT JOIN personas_autorizaciones pa ON a.id_autorizacion = pa.id_autorizacion
+        LEFT JOIN personas p ON pa.id_persona = p.id_persona
+        LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
+        $where
+        ORDER BY 
+            CAST(a.nro_kardex AS UNSIGNED) ASC, 
+            a.nro_kardex ASC
+    ";
 
     $stmt = $pdo->prepare($query);
     if (!empty($_GET['fecha_min']) && !empty($_GET['fecha_max'])) {
@@ -55,23 +53,50 @@ if (isset($_GET['exportar'])) {
     $sheet = $spreadsheet->getActiveSheet();
 
     // Establecer encabezados
-    $columnas = array_keys($autorizaciones[0]);
-    $col = 'A';
-    foreach ($columnas as $columna) {
-        $sheet->setCellValue($col . '1', $columna);
-        $col++;
+    $sheet->setCellValue('A1', 'N° Cronológico');
+    $sheet->setCellValue('B1', 'F. Ingreso');
+    $sheet->setCellValue('C1', 'Tipo de Permiso');
+    $sheet->setCellValue('D1', 'Participantes');
+    $sheet->setCellValue('E1', 'Viaja a');
+
+    // Ajustar automáticamente el ancho de las columnas
+    foreach (range('A', 'E') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
     }
 
-    // Agregar datos a las filas
+    // Agregar datos agrupados a las filas
     $fila = 2;
+    $currentKardex = null;
+    $startRow = 2;
+
     foreach ($autorizaciones as $autorizacion) {
-        $col = 'A';
-        foreach ($autorizacion as $valor) {
-            $sheet->setCellValue($col . $fila, $valor);
-            $col++;
+        if ($autorizacion['nro_kardex'] !== $currentKardex) {
+            // Si es un nuevo kardex, combinar celdas para el kardex, tipo_permiso, fecha_ingreso y viaja_a
+            if ($currentKardex !== null) {
+                $sheet->mergeCells("A$startRow:A" . ($fila - 1));
+                $sheet->mergeCells("B$startRow:B" . ($fila - 1));
+                $sheet->mergeCells("C$startRow:C" . ($fila - 1));
+                $sheet->mergeCells("E$startRow:E" . ($fila - 1));
+            }
+
+            $startRow = $fila;
+            $currentKardex = $autorizacion['nro_kardex'];
+
+            $sheet->setCellValue("A$fila", $autorizacion['nro_kardex']);
+            $sheet->setCellValue("B$fila", $autorizacion['fecha_ingreso']);
+            $sheet->setCellValue("C$fila", $autorizacion['tipo_permiso']);
+            $sheet->setCellValue("E$fila", $autorizacion['viaja_a']);
         }
+
+        $sheet->setCellValue("D$fila", $autorizacion['participante']);
         $fila++;
     }
+
+    // Combinar las celdas de la última autorización
+    $sheet->mergeCells("A$startRow:A" . ($fila - 1));
+    $sheet->mergeCells("B$startRow:B" . ($fila - 1));
+    $sheet->mergeCells("C$startRow:C" . ($fila - 1));
+    $sheet->mergeCells("E$startRow:E" . ($fila - 1));
 
     // Nombre del archivo con fecha
     $nombreArchivo = "autorizaciones_{$fechaMin}_a_{$fechaMax}.xlsx";
@@ -91,10 +116,9 @@ try {
         SELECT 
         a.id_autorizacion, 
         a.nro_kardex, 
-        a.encargado, 
         tp.des_tppermi AS tipo_permiso, 
         a.fecha_ingreso, 
-        a.observaciones,
+        a.viaja_a,
         GROUP_CONCAT(
             CONCAT(tr.descripcion, ': ', p.apellidos, ', ', p.nombres) SEPARATOR '\n'
         ) AS participantes
@@ -164,11 +188,10 @@ try {
                             <thead class="table-dark text-center">
                                 <tr>
                                     <th>N° Crono.</th>
-                                    <th>Encargado</th>
                                     <th>Participantes</th>
                                     <th>Tipo de Permiso</th>
                                     <th>F. Ingreso</th>
-                                    <th>Observaciones</th>
+                                    <th>Viaja a</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -180,11 +203,10 @@ try {
                                     <?php foreach ($autorizaciones as $autorizacion) : ?>
                                         <tr style="text-transform: uppercase;">
                                             <td class="text-center"><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
-                                            <td class="text-center"><?= htmlspecialchars($autorizacion['encargado']) ?></td>
                                             <td><?= nl2br(htmlspecialchars($autorizacion['participantes'] ?? 'N/A')) ?></td>
                                             <td class="text-center"><?= htmlspecialchars($autorizacion['tipo_permiso']) ?></td>
                                             <td><?= htmlspecialchars($autorizacion['fecha_ingreso']) ?></td>
-                                            <td><?= htmlspecialchars(mb_strimwidth($autorizacion['observaciones'] ?? 'N/A', 0, 10, '...')) ?></td>
+                                            <td><?= htmlspecialchars($autorizacion['viaja_a']) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -234,11 +256,10 @@ try {
                         data.forEach(autorizacion => {
                             let fila = `<tr style="text-transform: uppercase;">
                             <td class="text-center">${autorizacion.nro_kardex}</td>
-                            <td class="text-center">${autorizacion.encargado}</td>
                             <td>${autorizacion.participantes ? autorizacion.participantes.replace(/\n/g, "<br>") : "N/A"}</td>
                             <td class="text-center">${autorizacion.tipo_permiso}</td>
                             <td>${autorizacion.fecha_ingreso}</td>
-                            <td>${autorizacion.observaciones ? autorizacion.observaciones.substring(0, 10) + '...' : 'N/A'}</td>
+                            <td>${autorizacion.viaja_a}</td>
                         </tr>`;
                             tbody.innerHTML += fila;
                         });

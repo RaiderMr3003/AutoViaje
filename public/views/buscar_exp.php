@@ -21,7 +21,7 @@ try {
             a.encargado, 
             tp.des_tppermi AS tipo_permiso, 
             a.fecha_ingreso, 
-            a.observaciones,
+            a.viaja_a,
             GROUP_CONCAT(
                 CONCAT(
                     tr.descripcion, ': ', p.apellidos, ', ', p.nombres
@@ -46,7 +46,9 @@ try {
         $params[] = $fechaMax;
     }
 
-    $sql .= " GROUP BY a.id_autorizacion ORDER BY a.id_autorizacion ASC";
+    $sql .= " GROUP BY a.id_autorizacion ORDER BY 
+        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(a.nro_kardex, '-', 1), ',', 1) AS UNSIGNED) ASC,  -- Parte numérica
+        a.nro_kardex ASC  -- Parte alfabética";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
