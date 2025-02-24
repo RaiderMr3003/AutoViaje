@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
 <header class="p-3 mb-3 border-bottom bg-dark">
   <div class="container">

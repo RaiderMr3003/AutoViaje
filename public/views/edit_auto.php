@@ -91,8 +91,8 @@ require 'includes/functions.php';
 
                     <!-- Fechas -->
                     <div class="col-md-6">
-                    <label for="tiempo-de-viaje" class="form-label">Tiempo de viaje:</label>                        
-                    <input type="text" id="tiempo-de-viaje" class="form-control" name="tiempo-de-viaje"
+                        <label for="tiempo-de-viaje" class="form-label">Tiempo de viaje:</label>
+                        <input type="text" id="tiempo-de-viaje" class="form-control" name="tiempo-de-viaje"
                             value="<?= $autorizacion['tiempo_viaje'] ?>">
                     </div>
 
@@ -300,19 +300,18 @@ require 'includes/functions.php';
                                     </div>
 
                                     <div class="col-md-3">
-                                        <label for="nacionalidad" class="form-label">Nacionalidad:</label>
-                                        <select name="nacionalidad" id="nacionalidad" class="form-select">
-                                            <option value="">Seleccione</option>
-                                            <?php foreach (getNacionalidad() as $nacionalidad) : ?>
-                                                <option value="<?= $nacionalidad->id_nacionalidad ?>">
-                                                    <?= $nacionalidad->desc_nacionalidad ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
+                                        <label for="edad" class="form-label">Edad:</label>
+                                        <input class="form-control" type="number" id="edad" min="0" max="130" name="edad">
                                     </div>
 
                                     <div class="col-md-3">
-                                        <label for="edad" class="form-label">Edad:</label>
-                                        <input class="form-control" type="number" id="edad" min="0" max="130" name="edad">
+                                        <label for="edad" class="form-label">Tipo Edad:</label>
+                                        <select name="tipo_edad" id="tipo_edad" class="form-select">
+                                            <option value=""></option>
+                                            <option value="AÑO(S)">AÑO(S)</option>
+                                            <option value="MES(ES)">MES(ES)</option>
+                                            <option value="SEMANAS">SEMANAS</option>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-6">
@@ -325,17 +324,28 @@ require 'includes/functions.php';
                                         <input class="form-control" type="text" id="apellido-persona" name="apellido-persona">
                                     </div>
 
-                                    <div class="col-md-6" id="direccion-container">
+                                    <div class="col-md-4" id="direccion-container">
                                         <label for="direccion-persona" class="form-label">Dirección:</label>
                                         <input class="form-control" type="text" id="direccion-persona" name="direccion-persona">
                                     </div>
 
-                                    <div class="col-md-6" id="ubigeo-container">
-                                        <label for="Ubigeo-persona" class="form-label">Ubigeo:</label>
+                                    <div class="col-md-4" id="ubigeo-container">
+                                        <label for="Ubigeo-persona" class="form-label">Distrito:</label>
                                         <select name="Ubigeo-persona" id="Ubigeo-persona" class="form-select">
                                             <option value="">Seleccione</option>
                                             <?php foreach (getUbigeo() as $ubigeo) : ?>
                                                 <option value="<?= $ubigeo->id_ubigeo ?>"><?= $ubigeo->nom_dis ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="nacionalidad" class="form-label">Nacionalidad:</label>
+                                        <select name="nacionalidad" id="nacionalidad" class="form-select">
+                                            <option value="">Seleccione</option>
+                                            <?php foreach (getNacionalidad() as $nacionalidad) : ?>
+                                                <option value="<?= $nacionalidad->id_nacionalidad ?>">
+                                                    <?= $nacionalidad->desc_nacionalidad ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -454,8 +464,11 @@ require 'includes/functions.php';
                         <td>${persona.firma}</td>
                         <td>${persona.en_representacion}</td>
                         <td class="text-center">
+                            <button class="btn btn-warning btn-sm" onclick="editarPersona(${persona.id_persona}, ${id_autorizacion})">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
                             <button class="btn btn-danger btn-sm" onclick="eliminarPersona(${persona.id_persona}, ${id_autorizacion})">
-                                Eliminar
+                                <i class="bi bi-trash"></i>
                             </button>
                         </td>
                     </tr>`;
@@ -475,6 +488,7 @@ require 'includes/functions.php';
             formData.append("nombre_persona", document.getElementById("nombre-persona").value);
             formData.append("apellido_persona", document.getElementById("apellido-persona").value);
             formData.append("edad", document.getElementById("edad").value);
+            formData.append("tipo_edad", document.getElementById("tipo_edad").value);
             formData.append("nacionalidad", document.getElementById("nacionalidad").value);
             formData.append("Ubigeo_persona", document.getElementById("Ubigeo-persona").value);
             formData.append("direccion_persona", document.getElementById("direccion-persona").value);
@@ -523,6 +537,12 @@ require 'includes/functions.php';
                 xhr.send("id_persona=" + id_persona + "&id_autorizacion=" + id_autorizacion);
             }
         }
+
+        function editarPersona(id_persona, id_autorizacion) {
+            // Redirige a la vista de edición pasando los parámetros en la URL
+            window.location.href = `edit_persona.php?id_persona=${id_persona}&id_autorizacion=${id_autorizacion}`;
+        }
+
     </script>
 
 </body>

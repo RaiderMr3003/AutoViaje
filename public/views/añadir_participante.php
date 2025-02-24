@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombres = $_POST['nombre_persona'];
     $apellidos = $_POST['apellido_persona'];
     $edad = !empty($_POST['edad']) ? $_POST['edad'] : null;
+    $tipo_edad = !empty($_POST['tipo_edad']) ? $_POST['tipo_edad'] : null;
     $id_nacionalidad = $_POST['nacionalidad'];
     $id_tp_relacion = $_POST['condicion'];
     $firma = $_POST['firma'];
@@ -37,14 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
             // Solo actualizar los campos si los valores son diferentes
             if ($persona['edad'] != $edad || $persona['id_nacionalidad'] != $id_nacionalidad || $persona['id_ubigeo'] != $id_ubigeo || $persona['direccion'] != $direccion) {
-                $stmt = $pdo->prepare("UPDATE personas SET edad = ?, id_nacionalidad = ?, id_ubigeo = ?, direccion = ? WHERE id_persona = ?");
-                $stmt->execute([$edad, $id_nacionalidad, $id_ubigeo, $direccion, $id_persona]);
+                $stmt = $pdo->prepare("UPDATE personas SET edad = ?, tipo_edad = ?, id_nacionalidad = ?, id_ubigeo = ?, direccion = ? WHERE id_persona = ?");
+                $stmt->execute([$edad, $tipo_edad, $id_nacionalidad, $id_ubigeo, $direccion, $id_persona]);
             }
         } else {
             // Insertar nueva persona
-            $stmt = $pdo->prepare("INSERT INTO personas (id_tpdoc, num_doc, apellidos, nombres, edad, id_nacionalidad, id_ubigeo, direccion) 
-                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$id_tpdoc, $num_doc, $apellidos, $nombres, $edad, $id_nacionalidad, $id_ubigeo, $direccion]);
+            $stmt = $pdo->prepare("INSERT INTO personas (id_tpdoc, num_doc, apellidos, nombres, edad, tipo_edad, id_nacionalidad, id_ubigeo, direccion) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$id_tpdoc, $num_doc, $apellidos, $nombres, $edad, $tipo_edad, $id_nacionalidad, $id_ubigeo, $direccion]);
             $id_persona = $pdo->lastInsertId();
         }
 
