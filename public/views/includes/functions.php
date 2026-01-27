@@ -2,7 +2,8 @@
 
 require '../../config/conexion.php';
 
-function getTpPermisos() {
+function getTpPermisos()
+{
     global $pdo;
 
     try {
@@ -14,7 +15,8 @@ function getTpPermisos() {
     }
 }
 
-function getTpDoc() {
+function getTpDoc()
+{
     global $pdo;
 
     try {
@@ -26,7 +28,8 @@ function getTpDoc() {
     }
 }
 
-function getTpTransportes() {
+function getTpTransportes()
+{
     global $pdo;
 
     try {
@@ -38,7 +41,8 @@ function getTpTransportes() {
     }
 }
 
-function getCondicion() {
+function getCondicion()
+{
     global $pdo;
 
     try {
@@ -50,11 +54,13 @@ function getCondicion() {
     }
 }
 
-function getFirma() {
+function getFirma()
+{
     return ['SI', 'NO', 'HUELLA'];
 }
 
-function getUbigeo() {
+function getUbigeo()
+{
     global $pdo;
 
     try {
@@ -66,7 +72,8 @@ function getUbigeo() {
     }
 }
 
-function getNacionalidad() {
+function getNacionalidad()
+{
     global $pdo;
 
     try {
@@ -78,7 +85,8 @@ function getNacionalidad() {
     }
 }
 
-function getParticipantes($id_autorizacion) {
+function getParticipantes($id_autorizacion)
+{
     global $pdo;
 
     try {
@@ -110,6 +118,7 @@ function obtenerAutorizaciones($filtros = [], $limit = 10, $offset = 0)
             tp.des_tppermi AS tipo_permiso, 
             a.fecha_ingreso, 
             a.observaciones,
+            a.viaja_a,
             GROUP_CONCAT(
                 CONCAT(
                     tr.descripcion, ': ', p.apellidos, ', ', p.nombres
