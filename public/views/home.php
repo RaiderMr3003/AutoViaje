@@ -11,56 +11,19 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 // Paginación: obtener página actual
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $records_per_page = 10;
 $offset = ($page - 1) * $records_per_page;
 
-// Obtener el número total de registros
-$stmt_count = $pdo->query("SELECT COUNT(*) AS total FROM autorizaciones");
-$total_rows = $stmt_count->fetch(PDO::FETCH_ASSOC)['total'];
+require_once 'includes/functions.php';
+
+// Obtener datos usando la función centralizada
+$resultado = obtenerAutorizaciones([], $records_per_page, $offset);
+$autorizaciones = $resultado['data'];
+$total_rows = $resultado['total'];
 
 // Calcular el número total de páginas
 $total_pages = ceil($total_rows / $records_per_page);
-
-
-// Obtener datos de la tabla autorizaciones con límite y desplazamiento
-// Obtener datos de la tabla autorizaciones con límite y desplazamiento
-try {
-    $stmt = $pdo->prepare(" 
-        SELECT 
-            a.id_autorizacion, 
-            a.nro_kardex, 
-            a.encargado, 
-            tp.des_tppermi AS tipo_permiso, 
-            a.fecha_ingreso, 
-            a.observaciones,
-            GROUP_CONCAT(
-                CONCAT(
-                    tr.descripcion, ': ', p.apellidos, ', ', p.nombres
-                ) SEPARATOR '\n'
-            ) AS participantes
-        FROM autorizaciones a
-        JOIN tp_permiso tp ON a.id_tppermi = tp.id_tppermi
-        LEFT JOIN personas_autorizaciones pa ON a.id_autorizacion = pa.id_autorizacion
-        LEFT JOIN personas p ON pa.id_persona = p.id_persona
-        LEFT JOIN tp_relacion tr ON pa.id_tp_relacion = tr.id_tp_relacion
-        GROUP BY a.id_autorizacion
-        ORDER BY 
-            CAST(a.nro_kardex AS UNSIGNED) ASC,  -- Parte numérica
-            a.nro_kardex REGEXP '[A-Za-z]' DESC,  -- Prioriza valores alfanuméricos
-            a.nro_kardex ASC  -- Orden alfabético en caso de empate
-        LIMIT :limit OFFSET :offset
-    ");
-    $stmt->bindParam(':limit', $records_per_page, PDO::PARAM_INT);
-    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-    $stmt->execute();
-    $autorizaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Error al obtener autorizaciones: " . $e->getMessage());
-}
-
-require 'includes/functions.php';
-
 ?>
 
 <!DOCTYPE html>
@@ -98,7 +61,7 @@ require 'includes/functions.php';
                                     <?php
                                     $permisos = getTpPermisos();
                                     foreach ($permisos as $permiso) {
-                                        $selected = ($permiso->id_tppermi == $autorizacion['id_tppermi']) ? 'selected' : '';
+                                        $selected = ($permiso->id_tppermi == ($autorizacion['id_tppermi'] ?? '')) ? 'selected' : '';
                                         echo "<option value='{$permiso->id_tppermi}' $selected>{$permiso->des_tppermi}</option>";
                                     }
                                     ?>
@@ -159,7 +122,7 @@ require 'includes/functions.php';
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($autorizaciones as $autorizacion) : ?>
+                                <?php foreach ($autorizaciones as $autorizacion): ?>
                                     <tr style="text-transform: uppercase;">
                                         <td class="text-center"><?= htmlspecialchars($autorizacion['nro_kardex']) ?></td>
                                         <td class="text-center"><?= htmlspecialchars($autorizacion['encargado']) ?></td>
@@ -185,11 +148,32 @@ require 'includes/functions.php';
                         <!-- Paginación -->
                         <nav>
                             <ul class="pagination justify-content-center">
-                                <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                                    <li class="page-item <?php echo ($i === $page) ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $i; ?>"> <?php echo $i; ?> </a>
-                                    </li>
-                                <?php endfor; ?>
+                                <?php
+                                $range = 2; // Número de páginas a mostrar antes y después de la actual
+                                $initial_num = $page - $range;
+                                $condition_limit_num = ($page + $range) + 1;
+
+                                if ($initial_num > 1) {
+                                    echo '<li class="page-item"><a class="page-link" href="?page=1">1</a></li>';
+                                    if ($initial_num > 2) {
+                                        echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                                    }
+                                }
+
+                                for ($i = $initial_num; $i < $condition_limit_num; $i++) {
+                                    if ($i > 0 && $i <= $total_pages) {
+                                        $active = ($i === $page) ? 'active' : '';
+                                        echo '<li class="page-item ' . $active . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+                                    }
+                                }
+
+                                if ($condition_limit_num <= $total_pages) {
+                                    if ($condition_limit_num < $total_pages) {
+                                        echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                                    }
+                                    echo '<li class="page-item"><a class="page-link" href="?page=' . $total_pages . '">' . $total_pages . '</a></li>';
+                                }
+                                ?>
                             </ul>
                         </nav>
 
@@ -207,8 +191,8 @@ require 'includes/functions.php';
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $("form").on("submit", function(event) {
+        $(document).ready(function () {
+            $("form").on("submit", function (event) {
                 event.preventDefault();
 
                 let formData = {
@@ -224,14 +208,14 @@ require 'includes/functions.php';
                     type: "POST",
                     url: "buscar_auto.php",
                     data: formData,
-                    beforeSend: function() {
+                    beforeSend: function () {
                         $("tbody").html(
                             "<tr><td colspan='7' class='text-center'>Buscando...</td></tr>");
                     },
-                    success: function(response) {
+                    success: function (response) {
                         $("tbody").html(response);
                     },
-                    error: function() {
+                    error: function () {
                         $("tbody").html(
                             "<tr><td colspan='7' class='text-center text-danger'>Error en la búsqueda</td></tr>"
                         );
@@ -240,14 +224,14 @@ require 'includes/functions.php';
             });
         });
 
-        $(document).ready(function() {
-            $('.pagination a').on('click', function(e) {
+        $(document).ready(function () {
+            $('.pagination a').on('click', function (e) {
                 e.preventDefault();
                 let page = $(this).attr('href').split('page=')[1];
                 $.ajax({
                     url: 'home.php?page=' + page,
                     type: 'GET',
-                    success: function(data) {
+                    success: function (data) {
                         $('tbody').html($(data).find('tbody').html());
                         $('.pagination').html($(data).find('.pagination').html());
                     }
