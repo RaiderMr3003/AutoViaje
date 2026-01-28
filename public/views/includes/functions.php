@@ -162,9 +162,10 @@ function obtenerAutorizaciones($filtros = [], $limit = 10, $offset = 0)
 
     $query .= " GROUP BY a.id_autorizacion
         ORDER BY 
-            CAST(a.nro_kardex AS UNSIGNED) ASC,
-            a.nro_kardex REGEXP '[A-Za-z]' DESC,
-            a.nro_kardex ASC
+            CASE WHEN a.nro_kardex IS NULL OR TRIM(a.nro_kardex) = '' THEN 1 ELSE 2 END ASC,
+            a.fecha_ingreso DESC,
+            CAST(a.nro_kardex AS UNSIGNED) DESC,
+            a.nro_kardex DESC
         LIMIT $limit OFFSET $offset
     ";
 
